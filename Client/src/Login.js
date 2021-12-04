@@ -3,6 +3,7 @@ import { useNavigate, Route} from 'react-router-dom'
 
 import {Form, FormGroup, Label, Input, Button} from 'reactstrap'
 import { FacebookLoginButton } from "react-social-login-buttons";
+import { Link } from 'react-router-dom';
 
 import './index.css'
 const Login = () => {
@@ -33,7 +34,7 @@ const Login = () => {
             </div>
             <FacebookLoginButton className="mt-3 mb-3" />
             <div className="text-center">
-                <a href="/sign-up">Sign up</a>
+                <Link to="/sign-up">Sign up</Link>
                 <span className="p-2">|</span>
                 <a href="/sign-up">Forgot Password</a>
             </div>
