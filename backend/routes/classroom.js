@@ -5,13 +5,51 @@ var passport = require('../modules/passport');
 
 
 
-/*Create class */
+/*Create class FINISH */
 router.post('/api/CreateClass', function (req, res, next) {
-    let link=new Date();
-    let newLink=link.getTime(); //link cho m ruif nef
+    passport.authenticate("jwt", { session: false, }, function (err, user, info) {
+        if (err) {
+            return next(err);
+        }
+        if (!user) {
+            res.header({ "Access-Control-Allow-Origin": "*" });
+            res.status(401);
+            res.send({ message: info.message, success: false });
+            return;
+        }
+        //jwt id user user={id:'1',username:'tanthai'}
+        //write code:
+        //input:{na}
+        let {name, description, room} =req.body;
+        let link=new Date();
+        let newLink=link.getTime();
+        const sqlCreateClass = 'insert into classes (name,description,room,link,creatorId) values(?,?,?,?,?)'
+
+        pool.query(sqlCreateClass, [name, description, room, newLink,user.id ], (error, result) => {
+            if (error) {
+                res.send(error);
+            }
+            else {
+                const sqlCreateClassAccount = "insert into classaccount (accountId,classId,role) values(?,LAST_INSERT_ID(),?)"
+                pool.query(sqlCreateClassAccount, [user.id,"teacher"], (error, result) =>  {
+                    if (error) {
+                        res.send(error);
+                    }
+                    else {
+                        res.json(result);
+                    }
+                })
+                
+            }
+        });
+
+
+
+    }
+    )(req, res, next);
 });
 
-/*Get all list classroom with idPlayer  */
+/*Get all list classroom with idPlayer  FINISH*/
 router.get('/api/GetListClasses', function (req, res, next) {
     passport.authenticate("jwt", { session: false, }, function (err, user, info) {
         if (err) {
@@ -25,7 +63,9 @@ router.get('/api/GetListClasses', function (req, res, next) {
         }
         //jwt id user user={id:'1',username:'tanthai'}
         //write code:
-        let sql = 'select name,description from classes where id in(select classId from classaccount where accountId=?)';
+        const sql = `SELECT name, description,room, link FROM classes INNER JOIN classaccount ON classID=id
+        WHERE accountId=?
+        `
         pool.query(sql, [user.id], (error, result) => {
             if (error) {
                 res.send(error);

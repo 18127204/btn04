@@ -19,7 +19,7 @@ const Login = () => {
     };
     
     const handleLogin = (event) => {
-        event.preventDefault();
+        event.preventDefault(); // ngăn ngừa reload lại trang
         let promise = Axios({
             url: `${URL_API}/login`,
             method: 'POST',
@@ -27,7 +27,8 @@ const Login = () => {
         });
 
         promise.then((result) => {
-            // console.log('kq tra ve sau login',result.data);
+            
+            console.log('kq tra ve sau login',result);
             localStorage.setItem(INFO, JSON.stringify(result.data.content));
             localStorage.setItem(TOKEN, result.data.tokenAccess);
             navigate("/classroom");
@@ -44,7 +45,7 @@ const Login = () => {
     return (
         <div className="container">
             <div className="form-group d-flex justify-content-center" style={{ marginTop: 50 }}>
-                <div className="card">
+                <div className="cardLogin">
                     <h1 className="text-center">Login</h1>
                     <div className="card-body" style={{marginTop:'50px'}}>
                         <div className="form-group sizeformGroup" style={{ borderBottom: 'none' }}>

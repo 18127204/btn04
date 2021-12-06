@@ -40,7 +40,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 //init api from router in here
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/classroom', passport.authenticate('jwt', { session: false }), classRoomRouter);
+app.use('/classroom', classRoomRouter);
 app.use('/login', loginRouter);
 app.use('/register', registerRouter);
 app.use('/sendEmail', passport.authenticate('jwt', { session: false }), sendEmailRouter);
