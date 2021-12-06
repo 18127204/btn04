@@ -1,10 +1,11 @@
 import React, { Component, useState } from 'react'
 
-const AddClass = ({addClass}) => {
+const CreateClass = ({addClass}) => {
     const [valuesForm, setValuesForm] = useState(
         {
-            nameClass: '',
-            room: ''
+            name: '',
+            description: '',
+            room:''
         }
     )
     const handleChange = (e) => {
@@ -14,7 +15,7 @@ const AddClass = ({addClass}) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        addClass(setValuesForm);
+        addClass(valuesForm);
     }
     return (
         <div>
@@ -31,19 +32,15 @@ const AddClass = ({addClass}) => {
                             <div className="modal-body">
                                 <div className="form-group">
                                     <p>Name (*)</p>
-                                    <input type="text" className="form-control" name="nameclass" onChange={handleChange} required />
+                                    <input type="text" className="form-control" name="name" onChange={handleChange} required />
                                 </div>
-                                {/* <div className="form-group">
-                                        <p>Phần</p>
-                                        <input type="text" className="form-control" name="phan" onChange={this.handleChange} />
-                                    </div>
-                                    <div className="form-group">
-                                        <p>Chủ đề</p>
-                                        <input type="text" className="form-control" name="chude" onChange={this.handleChange}/>
-                                    </div> */}
                                 <div className="form-group">
-                                    <p>Room</p>
-                                    <input type="text" className="form-control" name="room" onChange={handleChange} />
+                                    <p>Room (*)</p>
+                                    <input type="text" className="form-control" name="room" onChange={handleChange} required />
+                                </div>
+                                <div className="form-group">
+                                    <p>Description (*)</p>
+                                    <input type="text" className="form-control" name="description" onChange={handleChange} required/>
                                 </div>
                             </div>
                             <div className="modal-footer">
@@ -60,4 +57,4 @@ const AddClass = ({addClass}) => {
     )
 }
 
-export default AddClass
+export default CreateClass;

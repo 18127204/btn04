@@ -1,47 +1,48 @@
 import React, { Component, useState, useEffect } from 'react'
 import { URL_API, INFO, TOKEN } from '../../SettingValue';
 import Header from '../Header/Header';
-import Classroom from '../Classroom/index';
+import Class from '../Classroom';
 import Axios from 'axios';
-import CreateClass from '../CreateClass/index';
-import JoinClass from '../JoinClass/index';
+import CreateClass from '../CreateClass';
+import JoinClass from '../JoinClass';
 import { Navigate } from 'react-router-dom';
 
 
 const ClassRoom = () => {
 
-    const [listClassroom, setListClassrom] = useState([])
+    const [listClassroom, setListClassroom] = useState([]);
+
     const getAllClassRoom = () => {
         let promise = Axios({
-            url: `${URL_API}/classroom/api/GetALLListClassroom/${JSON.parse(localStorage.getItem(INFO)).id}`,
+            url: `${URL_API}/classroom/api/GetListClasses`,
             method: 'GET',
             headers: { 'Authorization': 'Bearer ' + localStorage.getItem(TOKEN) }
         });
         promise.then((result) => {
-            setListClassrom(result.data)
-            console.log('get all class: ',listClassroom);
+            setListClassroom(result.data)
         });
         promise.catch((er) => {
             console.log("Erroor classroom", er);
         })
     }
 
-    const handleAddNewClass = (cl) => {
-        let tempClass = [...listClassroom];
-        let id_nguoithamgia = JSON.parse(localStorage.getItem(INFO)).id;
-        let dLink = new Date();
-        let duonglink = '/classroom/' + dLink.getTime();
-        // let dataSend={...cl,id_nguoithamgia,duonglink,id_chuphong:id_nguoithamgia};
-        let dataSend = { ...cl, id_nguoithamgia, duonglink };
+
+    const handleAddNewClass = (dataSend) => {
+        let tempClass=[...listClassroom];
+        let getRandlink=new Date();
+        let link=getRandlink.getTime()+'';
+        dataSend={...dataSend,link};
         tempClass.push(dataSend);
+        // console.log('add new class111:',tempClass);
         let promise = Axios({
             method: 'POST',
-            url: `${URL_API}/classroom/api/AddNewClassroom`,
+            url: `${URL_API}/classroom/api/CreateClass`,
             data: dataSend,
             headers: { 'Authorization': 'Bearer ' + localStorage.getItem(TOKEN) }
         });
         promise.then((res) => {
-            setListClassrom(tempClass)
+            console.log('add new class ',tempClass);
+            setListClassroom(tempClass);
             console.log('Create Class success', dataSend);
         });
         promise.catch((error) => {
@@ -63,7 +64,7 @@ const ClassRoom = () => {
             return lst.map((cl, index) => {
                 return (
                     <div className="col-md-3" key={index}>
-                        <Classroom cl={cl} />
+                        <Class cl={cl} />
                     </div>
                 );
             })
@@ -89,7 +90,7 @@ const ClassRoom = () => {
         promise.then((result) => {
             console.log('Join class sucess', result.data);
             tempClass.push(result.data[0]);
-            setListClassrom(tempClass)
+            setListClassroom(tempClass)
             let promise1 = Axios({
                 method: 'POST',
                 url: `${URL_API}/classroom/api/AddPeopleClassroom`,
@@ -109,6 +110,7 @@ const ClassRoom = () => {
         });
 
     }
+
     if (localStorage.getItem(TOKEN)) {
         return (
             <div>
@@ -119,7 +121,7 @@ const ClassRoom = () => {
                     </div>
                 </div>
                 <CreateClass addClass={handleAddNewClass} />
-                <JoinClass joinClass={handleJoinClass} />
+                {/* <JoinClass joinClass={handleJoinClass} /> */}
             </div>
         )
 

@@ -20,23 +20,24 @@ router.post('/api/CreateClass', function (req, res, next) {
         //jwt id user user={id:'1',username:'tanthai'}
         //write code:
         //input:{na}
-        let {name, description, room} =req.body;
-        let link=new Date();
-        let newLink=link.getTime();
+        let {name, description, room,link} =req.body;
+        // let link=new Date();
+        // let newLink=link.getTime();
         const sqlCreateClass = 'insert into classes (name,description,room,link,creatorId) values(?,?,?,?,?)'
 
-        pool.query(sqlCreateClass, [name, description, room, newLink,user.id ], (error, result) => {
+        pool.query(sqlCreateClass, [name, description, room, link,user.id ], (error, result) => {
             if (error) {
                 res.send(error);
             }
             else {
+                let tem=result;
                 const sqlCreateClassAccount = "insert into classaccount (accountId,classId,role) values(?,LAST_INSERT_ID(),?)"
                 pool.query(sqlCreateClassAccount, [user.id,"teacher"], (error, result) =>  {
                     if (error) {
                         res.send(error);
                     }
                     else {
-                        res.json(result);
+                        res.json(tem);
                     }
                 })
                 

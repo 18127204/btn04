@@ -1,17 +1,18 @@
 import React from 'react'
-
-export default function AClass(props) {
+import { Link } from 'react-router-dom';
+const Class =({cl}) => {
    // let {tenlophoc,phan,chude,phong,duonglink} = props.cl;
-   let {nameclass,room,duonglink} = props.cl;
+   let {name, description,room, link} = cl;
     return (
 
          <div className="card" style={{ width: '18rem' }}>
-         {/* <img className="card-img-top" src="..." alt="Card image cap" /> */}
          <div className="card-body">
-             <h5 className="card-title">Name: {nameclass}</h5>
+             <h5 className="card-title">Name: {name}</h5>
              <p className="card-text">Room: {room}</p>
-             <a href={duonglink} className="btn btn-primary">Join</a>
+             <p className="card-text">Description: {description}</p>
+             <Link to={link} className="btn btn-primary">Join</Link>
          </div>
      </div>
     )
 }
+export default Class;
