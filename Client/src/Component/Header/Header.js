@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { INFO, TOKEN,INFCLASS } from '../../SettingValue';
-import { Redirect } from 'react-router';
+import { Navigate } from 'react-router-dom';
 export default function Header(props) {
     const handleLogOut = () => {
         localStorage.removeItem(TOKEN);
@@ -39,7 +39,7 @@ export default function Header(props) {
         )
     }
     else {
-        return <Redirect to='/' />
+        return <Navigate to='/' />
     }
 
 }

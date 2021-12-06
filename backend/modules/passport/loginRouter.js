@@ -4,7 +4,6 @@ var passport=require('./index');
 var jwt = require('jsonwebtoken');
 
 router.post('/',passport.authenticate('local',{session:false}),(req, res, next)=>{
-    console.log(req.body.username)
     res.json({
         success:true,
         content:req.user,
@@ -12,7 +11,7 @@ router.post('/',passport.authenticate('local',{session:false}),(req, res, next)=
             id:req.user.id,
             username:req.user.username
         },
-        'secret',
+        process.env.jwt_secret,
         { expiresIn:'1h'})
     });
 });

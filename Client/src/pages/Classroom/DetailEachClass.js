@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import HeaderClassRoom from '../../components/HeaderClassRoom/HeaderClassRoom';
-import { Redirect } from 'react-router';
+import HeaderClassRoom from '../../Component/HeaderClassRoom/HeaderClassRoom';
+import { Navigate } from 'react-router-dom';
 import { URL_API, URL_FRONTEND, INFO, TOKEN, INFCLASS } from '../../SettingValue';
 import Axios from 'axios';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
@@ -605,7 +605,7 @@ export default class DetailEachClass extends Component {
             )
         }
         else {
-            return <Redirect to='/' />
+            return <Navigate to='/' />
         }
 
     }

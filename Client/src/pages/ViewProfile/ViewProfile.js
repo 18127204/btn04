@@ -1,7 +1,7 @@
 import React from 'react';
-import { Redirect } from 'react-router';
+import { Navigate } from 'react-router-dom';
 import { NavLink } from 'react-router-dom';
-import Header from '../../components/Header/Header';
+import Header from '../../Component/Header/Header';
 import { INFO, TOKEN } from '../../SettingValue';
 export default function ViewProfile(props) {
 
@@ -53,7 +53,7 @@ export default function ViewProfile(props) {
         )
     }
     else {
-        return <Redirect to='/' />
+        return <Navigate to='/' />
     }
 
 }

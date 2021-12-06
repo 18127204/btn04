@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
-import { Redirect } from 'react-router';
 import {URL_API,INFO,TOKEN} from '../../SettingValue';
-import Header from '../../components/Header/Header';
+import Header from '../../Component/Header/Header';
 import AClass from './AClass';
 import Axios from 'axios';
 import ModalAddClassRoom from './ModalAddClassRoom';
 import ModalJoinClassRoom from './ModalJoinClassRoom';
+import { Navigate } from 'react-router-dom';
 
 
 
@@ -142,7 +142,7 @@ export default class ClassRoom extends Component {
             
         }
         else{
-            return <Redirect to='/'/>
+            return <Navigate to='/'/>
         }
     }
 }

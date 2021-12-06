@@ -1,21 +1,21 @@
 import React, { useState } from 'react';
 import { FaUser, FaLock, FaGooglePlusG } from "react-icons/fa";
-import './Login.css';
+import './index.css';
 import Axios from 'axios';
 import { URL_API, INFO, TOKEN } from '../../SettingValue';
 import { Link } from 'react-router-dom';
-export default function Login(props) {
-    let [userLogin, setUserLogin] = useState({
-        username: "",
-        password: "",
-    });
+import { useNavigate } from 'react-router-dom';
+const Login = () => {
+    const navigate = useNavigate();
 
-    const handleInput = (event) => {
-        let { name, value } = event.target;
-        setUserLogin({
-            ...userLogin,
-            [name]: value,
-        });
+    const [username, setUsername] = useState("")
+    const [password, setPassword] = useState("")
+
+    const handleInputUsername = (event) => {
+        setUsername(event.target.value)
+    };
+    const handleInputPassword = (event) => {
+        setPassword(event.target.value)
     };
     
     const handleLogin = (event) => {
@@ -23,14 +23,14 @@ export default function Login(props) {
         let promise = Axios({
             url: `${URL_API}/login`,
             method: 'POST',
-            data: userLogin
+            data: {username,password}
         });
 
         promise.then((result) => {
             // console.log('kq tra ve sau login',result.data);
             localStorage.setItem(INFO, JSON.stringify(result.data.content));
             localStorage.setItem(TOKEN, result.data.tokenAccess);
-            props.history.push("/classroom");
+            navigate("/classroom");
         })
         promise.catch((err) => {
             alert('Login again');
@@ -39,7 +39,7 @@ export default function Login(props) {
     };
 
     const handleRegister = () => {
-        props.history.push("/register");
+        navigate("/register");
     }
     return (
         <div className="container">
@@ -50,14 +50,14 @@ export default function Login(props) {
                         <div className="form-group sizeformGroup" style={{ borderBottom: 'none' }}>
                             <div style={{ width: '100%', display: 'flex', alignItems: 'center' }}>
                                 <FaUser />
-                                <input type="text" style={{ flexGrow: 1, marginLeft: '10px' }} name="username" className="form-control d-inline sizeInput" placeholder="username"  onChange={handleInput}  />
+                                <input type="text" style={{ flexGrow: 1, marginLeft: '10px' }} name="username" className="form-control d-inline sizeInput" placeholder="username"  onChange={handleInputUsername}  />
                             </div>
 
                         </div>
                         <div className="form-group sizeformGroup" style={{ borderBottom: 'none' }}>
                             <div style={{ width: '100%', display: 'flex', alignItems: 'center' }}>
                                 <FaLock />
-                                <input type="password" name="password" style={{ flexGrow: 1, marginLeft: '10px' }} className="form-control d-inline sizeInput" placeholder="Password" onChange={handleInput}/>
+                                <input type="password" name="password" style={{ flexGrow: 1, marginLeft: '10px' }} className="form-control d-inline sizeInput" placeholder="Password" onChange={handleInputPassword}/>
 
                             </div>
                         </div>
@@ -83,3 +83,4 @@ export default function Login(props) {
 
     )
 }
+export default Login;
