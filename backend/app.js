@@ -45,12 +45,11 @@ app.use('/login', loginRouter);
 app.use('/register', registerRouter);
 app.use('/sendEmail', passport.authenticate('jwt', { session: false }), sendEmailRouter);
 app.use('/assignment', passport.authenticate('jwt', { session: false }), assignmentRouter);
-//app.use('/point', passport.authenticate('jwt', { session: false }), pointRouter);
-app.use('/point',pointRouter);
+app.use('/point', passport.authenticate('jwt', { session: false }), pointRouter);
 app.use('/fileExcel', passport.authenticate('jwt', { session: false }),excelRouter);
-//app.use('/fileExcel',excelRouter);
-//app.use('/importExcel', passport.authenticate('jwt', { session: false }),importExcelRouter);
-app.use('/importExcel',importExcelRouter);
+app.use('/importExcel', passport.authenticate('jwt', { session: false }),importExcelRouter);
+
+
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));

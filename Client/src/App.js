@@ -4,8 +4,7 @@ import {Route,Routes } from 'react-router-dom';
 import Login from './Component/Login/index';
 import ClassRoom from './Component/ListClassroom/index';
 import ViewProfile from './pages/ViewProfile/ViewProfile';
-import Register from './pages/Register/Register';
-//import Register from './pages/RegisterV1/Register';
+import Register from './Component/Register';
 import DetailEachClass from './pages/Classroom/DetailEachClass';
 import TestArrange from './pages/Classroom/TestArrange';
 import TestUploadExcel from './pages/Classroom/TestUploadExcel';
@@ -20,10 +19,7 @@ const App = () => {
           <Route path='/profile' component={<ViewProfile />} />
           <Route path='/classroom/:duonglink' component={<DetailEachClass />} />
 
-          <Route path='/testArrange' element={<TestArrange />} />
-          <Route path='/testUploadExcel' element={<TestUploadExcel />} />
-
-          {/* <Route path='*' component={Login} /> */}
+          <Route path='*' element={<Login />} />
 
         </Routes>
     </div>
