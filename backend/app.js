@@ -19,6 +19,7 @@ var assignmentRouter = require('./routes/Assignment');
 var pointRouter = require('./routes/Point');
 var excelRouter = require('./routes/Fileexcel');
 var importExcelRouter=require('./routes/ImportExcel');
+var profileRouter = require('./routes/Profile');
 var app = express();
 
 // view engine setup
@@ -43,11 +44,12 @@ app.use('/users', usersRouter);
 app.use('/classroom', classRoomRouter);
 app.use('/login', loginRouter);
 app.use('/register', registerRouter);
-app.use('/sendEmail', passport.authenticate('jwt', { session: false }), sendEmailRouter);
-app.use('/assignment', passport.authenticate('jwt', { session: false }), assignmentRouter);
-app.use('/point', passport.authenticate('jwt', { session: false }), pointRouter);
-app.use('/fileExcel', passport.authenticate('jwt', { session: false }),excelRouter);
-app.use('/importExcel', passport.authenticate('jwt', { session: false }),importExcelRouter);
+app.use('/sendEmail', sendEmailRouter);
+app.use('/assignment', assignmentRouter);
+app.use('/point',pointRouter);
+app.use('/fileExcel',excelRouter);
+app.use('/importExcel',importExcelRouter);
+app.use('/profile',profileRouter);
 
 
 // catch 404 and forward to error handler
