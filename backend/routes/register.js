@@ -5,24 +5,14 @@ var passport=require('../modules/passport');
 
 /*Create account */  
 router.post('/', function(req, res, next) {
-    let {hoten,email, sodienthoai,diachi,username,password,studentid}=req.body;
-
-    let sqlAccount="insert into account (hoten,email, sodienthoai,diachi,username,password,studentid) values(?,?,?,?,?,?,?)";
-    pool.query(sqlAccount,[hoten,email, sodienthoai,diachi,username,password,studentid],(error, result) => {
+    const {username, password,email, name, phone}=req.body;
+    const sqlRegister  ="INSERT INTO account (username,password,email,name,phone) values(?,?,?,?,?)";
+    pool.query(sqlRegister,[username,password, email,name,phone],(error, result) => {
          if (error){
              res.json({message:'registerfail'});
          } 
          else{
             res.json({message:'registersuccess'});
-            //  let sqlInfor='insert into infomation (hoten,email,sodienthoai,diachi) values(?,?,?,?)';
-            //  pool.query(sqlInfor,[hoten,email,sodienthoai,diachi],(error,result)=>{
-            //     if(error){
-            //         res.json({message:'registerfail'});
-            //     }
-            //     else{
-            //         res.json({message:'registersuccess'});
-            //     }
-            //  });
          }
 
         }
