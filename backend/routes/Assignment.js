@@ -2,7 +2,7 @@ var express=require('express');
 var router=express.Router();
 var pool=require('./pool');
 var passport=require('../modules/passport');
-
+/*Show grade structure FINISH */
 router.get('/api/ShowGradeStructure/:link', function(req, res, next) {
     passport.authenticate("jwt", { session: false, }, function (err, user, info) {
         if (err) {
@@ -32,7 +32,7 @@ router.get('/api/ShowGradeStructure/:link', function(req, res, next) {
     )(req, res, next);
 })
 
-
+/*  Create a assignment FINISH*/
 router.post('/api/CreateAssignment', function(req, res, next) {
     passport.authenticate("jwt", { session: false, }, function (err, user, info) {
         if (err) {
@@ -44,15 +44,32 @@ router.post('/api/CreateAssignment', function(req, res, next) {
             res.send({ message: info.message, success: false });
             return;
         }
-        let link=req.body.link;
-        let sql=`SELECT cl.role FROM classaccount cl INNER JOIN classes c ON cl.accountId=c.id WHERE link=?
+        let {link,name,description,grade} = req.body;
+        let sql=`SELECT cl.role,c.id FROM classaccount cl INNER JOIN classes c ON cl.classId=c.id WHERE link=?
         and cl.accountId=?`;
         pool.query(sql,[link,user.id],(error,result)=>{
             if(error){
                 res.send(error);
             }
             else{
-                res.json(result);
+                if (result[0].role ==="teacher") {
+    
+                    let sqlInsert = `INSERT INTO assignment (classId,name,creatorId,description,grade) VALUES(?,?,?,?,?)`;
+                    pool.query(sqlInsert,[result[0].id,name,user.id,description,grade],(error,result)=> {
+                        if(error){
+                            res.send(error);
+                        }
+                        else {
+                            res.json({message:'insert assignment success'});
+                        }
+
+                    })
+
+                }
+                else {
+                    res.json({message:'false'});
+                }
+            
             }   
         });
     }
@@ -60,6 +77,121 @@ router.post('/api/CreateAssignment', function(req, res, next) {
 })
 
 
+/*Delete a assignment FINISH*/
+router.delete('/api/DeleteAssignment', function(req, res, next) {
+    passport.authenticate("jwt", { session: false, }, function (err, user, info) {
+        if (err) {
+            return next(err);
+        }
+        if (!user) {
+            res.header({ "Access-Control-Allow-Origin": "*" });
+            res.status(401);
+            res.send({ message: info.message, success: false });
+            return;
+        }
+        let id=req.body.id;
+        let sql=`DELETE FROM assignment WHERE id=?`;
+        pool.query(sql,[id],(error,result)=>{
+            if(error){
+                res.send(error);
+            }
+            else{
+                res.json({message:"delete assignment success"});
+                
+            }   
+        });
+    }
+    
+    )(req, res, next);
+})
+
+/*Update a assignment FINISH */
+router.put('/api/UpdateAssignment', function(req, res, next) {
+    passport.authenticate("jwt", { session: false, }, function (err, user, info) {
+        if (err) {
+            return next(err);
+        }
+        if (!user) {
+            res.header({ "Access-Control-Allow-Origin": "*" });
+            res.status(401);
+            res.send({ message: info.message, success: false });
+            return;
+        }
+        let { link,id,name,description,grade} = req.body;
+        let sql=`SELECT cl.role,c.id FROM classaccount cl INNER JOIN classes c ON cl.classId=c.id WHERE link=?
+        and cl.accountId=?`;
+        pool.query(sql,[link,user.id],(error,result)=>{
+            if(error){
+                res.send(error);
+            }
+            else{
+                if (result[0].role ==="teacher") {
+    
+                    let sqlInsert = `UPDATE assignment SET name=?,description=?,grade=? WHERE id=?`;
+                    pool.query(sqlInsert,[name,description,grade,id],(error,result)=> {
+                        if(error){
+                            res.send(error);
+                        }
+                        else {
+                            res.json({message:'Update assignment success'});
+                        }
+
+                    })
+
+                }
+                else {
+                    res.json({message:'false'});
+                }
+            
+            }   
+        });
+    }
+    )(req, res, next);
+})
+
+/*Arrange  assignment NOT FINISH */
+router.put('/api/ArrangeAssignment/:link', function(req, res, next) {
+    passport.authenticate("jwt", { session: false, }, function (err, user, info) {
+        if (err) {
+            return next(err);
+        }
+        if (!user) {
+            res.header({ "Access-Control-Allow-Origin": "*" });
+            res.status(401);
+            res.send({ message: info.message, success: false });
+            return;
+        }
+        let {link,name,description,grade} = req.body;
+        let sql=`SELECT cl.role,c.id FROM classaccount cl INNER JOIN classes c ON cl.classId=c.id WHERE link=?
+        and cl.accountId=?`;
+        pool.query(sql,[link,user.id],(error,result)=>{
+            if(error){
+                res.send(error);
+            }
+            else{
+                if (result[0].role ==="teacher") {
+    
+                    let sqlInsert = `INSERT INTO assignment (classId,name,creatorId,description,grade) VALUES(?,?,?,?,?)`;
+                    pool.query(sqlInsert,[result[0].id,name,user.id,description,grade],(error,result)=> {
+                        if(error){
+                            res.send(error);
+                        }
+                        else {
+                            res.json({message:'insert assignment success'});
+                        }
+
+                    })
+
+                }
+                else {
+                    res.json({message:'false'});
+                }
+            
+            }   
+        });
+    }
+    )(req, res, next);
+})
 
 
 
