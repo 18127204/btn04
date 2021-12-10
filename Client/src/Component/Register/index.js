@@ -7,12 +7,12 @@ import { useNavigate } from 'react-router-dom';
 const Register =() => {
   const navigate = useNavigate();
   const [userRegister, setUserRegister] = useState({
-      hoten: "",
-      email: "",
-      sodienthoai: "",
-      username: "",
-      password: "",
-      confirmpassword: "",
+    username: "",
+    password: "",
+    email: "",
+    name: "",
+    phone: "",
+    confirmpassword: "",
 
   });
   const handleInput = (event) => {
@@ -58,10 +58,10 @@ const Register =() => {
                       <div className="row">
                           <div className="col-md-6">
                               <div className="form-group sizeformGroupRegister">
-                                  <input type="text" name="hoten" className="form-control d-inline sizeInputRegister" placeholder="Fullname" onChange={handleInput} />
+                                  <input type="text" name="name" className="form-control d-inline sizeInputRegister" placeholder="Fullname" onChange={handleInput} />
                               </div>
                               <div className="form-group sizeformGroupRegister">
-                                  <input type="text" name="sodienthoai" className="form-control d-inline sizeInputRegister" placeholder="Phone" onChange={handleInput} />
+                                  <input type="text" name="phone" className="form-control d-inline sizeInputRegister" placeholder="Phone" onChange={handleInput} />
                               </div>
                               <div className="form-group sizeformGroupRegister">
                                   <input type="password" name="password" className="form-control d-inline sizeInputRegister" placeholder="Password" onChange={handleInput} />
