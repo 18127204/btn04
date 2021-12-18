@@ -20,6 +20,7 @@ var pointRouter = require('./routes/Point');
 var excelRouter = require('./routes/Fileexcel');
 var importExcelRouter=require('./routes/ImportExcel');
 var profileRouter = require('./routes/Profile');
+var AuthorizationRouter=require('./routes/Authorization');
 var app = express();
 
 // view engine setup
@@ -50,7 +51,7 @@ app.use('/point',pointRouter);
 app.use('/fileExcel',excelRouter);
 app.use('/importExcel',importExcelRouter);
 app.use('/profile',profileRouter);
-
+app.use('/idenRole',AuthorizationRouter);
 
 
 // catch 404 and forward to error handler

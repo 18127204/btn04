@@ -78,8 +78,6 @@ router.get('/api/GetListClasses', function (req, res, next) {
     )(req, res, next);
 });
 
-
-
 /*Get value detail classroom based on link */
 router.get('/api/ShowDetailClass/:link', function (req, res, next) {
     passport.authenticate("jwt", { session: false, }, function (err, user, info) {
@@ -174,7 +172,7 @@ router.get('/api/ShowListStudents/:link', function (req, res, next) {
     )(req, res, next);
 });
 
-/*Join classroom by link */
+/*Join classroom by link FINISH*/
 router.post('/api/joinClassByLink', function (req, res, next) {
     passport.authenticate("jwt", { session: false, }, function (err, user, info) {
         if (err) {
@@ -208,7 +206,7 @@ router.post('/api/joinClassByLink', function (req, res, next) {
                             res.send(error);
                         }
                         else {
-                            res.json({message:"insert success"})
+                            res.json({message:"Join success"});
 
                         }
 
@@ -216,7 +214,7 @@ router.post('/api/joinClassByLink', function (req, res, next) {
 
                 }
                 else {
-                    res.send('Link does not exist')
+                    res.json({message:"Link does not exist"});
                 }
                
             }
@@ -225,8 +223,5 @@ router.post('/api/joinClassByLink', function (req, res, next) {
     )(req, res, next);
 
 });
-/*add people to classroom by id */
-router.post('/api/AddPeopleClassroom', function (req, res, next) {
 
-});
 module.exports = router;

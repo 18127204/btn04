@@ -11,24 +11,22 @@ const HeaderClassRoom = () => {
     if (localStorage.getItem(TOKEN)) {
         return (
             <nav className="navbar navbar-expand-sm navbar-dark bg-dark ">
-                {/* <h5 className='text-white'>Tên lớp học:{props.tenLop}</h5> */}
                 <button className="navbar-toggler d-lg-none" type="button" data-toggle="collapse" data-target="#collapsibleNavId" aria-controls="collapsibleNavId" aria-expanded="false" aria-label="Toggle navigation">
                     <span className="navbar-toggler-icon" />
                 </button>
                 <div className="collapse navbar-collapse" id="collapsibleNavId">
-
                     <ul className="navbar-nav mx-auto mt-2 mt-lg-0 nav nav-pills" role="tablist">
                         <li className="nav-item">
-                            <a className="nav-link active" data-toggle="pill" href="#bangtin">Bảng tin</a>
+                            <a className="nav-link active" data-toggle="pill" href="#Newsfeed">Newsfeed</a>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" data-toggle="pill" href="#baitaptrenlop">Bài tập trên lớp</a>
+                            <a className="nav-link" data-toggle="pill" href="#Assignment">Assignment</a>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" data-toggle="pill" href="#moinguoi">Mọi người</a>
+                            <a className="nav-link" data-toggle="pill" href="#People">People</a>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" data-toggle="pill" href="#sodiem">Số điểm</a>
+                            <a className="nav-link" data-toggle="pill" href="#Grade">Grade</a>
                         </li>
                     </ul>
 

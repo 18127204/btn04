@@ -28,10 +28,10 @@ const ClassRoom = () => {
 
 
     const handleAddNewClass = (dataSend) => {
-        let tempClass=[...listClassroom];
-        let getRandlink=new Date();
-        let link=getRandlink.getTime()+'';
-        dataSend={...dataSend,link};
+        let tempClass = [...listClassroom];
+        let getRandlink = new Date();
+        let link = getRandlink.getTime() + '';
+        dataSend = { ...dataSend, link };
         tempClass.push(dataSend);
         // console.log('add new class111:',tempClass);
         let promise = Axios({
@@ -41,7 +41,7 @@ const ClassRoom = () => {
             headers: { 'Authorization': 'Bearer ' + localStorage.getItem(TOKEN) }
         });
         promise.then((res) => {
-            console.log('add new class ',tempClass);
+            console.log('add new class ', tempClass);
             setListClassroom(tempClass);
             console.log('Create Class success', dataSend);
         });
@@ -50,13 +50,28 @@ const ClassRoom = () => {
         });
     }
 
+    const handleJoinClass = (inputLink) => {
+        let promise = Axios({
+            method: 'POST',
+            url: `${URL_API}/classroom/api/joinClassByLink`,
+            data:{link:inputLink},
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem(TOKEN) }
+        });
+        promise.then((result) => {
+            alert(result.data.message);
+        });
+        promise.catch((error) => {
+            console.log('handleJoinClass failed', error);
+        });
+
+    }
 
     useEffect(() => {
         if (localStorage.getItem(TOKEN)) {
             getAllClassRoom()
         }
     }, [])
- 
+
 
     const displayListClass = (lst) => {
         console.log('Length: ', lst.length);
@@ -74,43 +89,6 @@ const ClassRoom = () => {
         }
     }
 
-    //hmm
-    const handleJoinClass = (inputLink) => {
-        let tempClass = [...listClassroom];
-        let id_nguoithamgia = JSON.parse(localStorage.getItem(INFO)).id;
-
-        let words = inputLink.split('/');
-        let resultFind = words[words.length - 1];
-
-        let promise = Axios({
-            method: 'GET',
-            url: `${URL_API}/classroom/api/joinClassroom/${resultFind}`,
-            headers: { 'Authorization': 'Bearer ' + localStorage.getItem(TOKEN) }
-        });
-        promise.then((result) => {
-            console.log('Join class sucess', result.data);
-            tempClass.push(result.data[0]);
-            setListClassroom(tempClass)
-            let promise1 = Axios({
-                method: 'POST',
-                url: `${URL_API}/classroom/api/AddPeopleClassroom`,
-                data: { id_nguoithamgia: id_nguoithamgia, duonglink: resultFind },
-                headers: { 'Authorization': 'Bearer ' + localStorage.getItem(TOKEN) }
-            });
-            promise1.then((res) => {
-                console.log('add people to class thanh cong');
-            });
-            promise1.catch((error) => {
-                console.log('add people to class that bai', error);
-            })
-
-        });
-        promise.catch((error) => {
-            console.log('tao class that bai', error);
-        });
-
-    }
-
     if (localStorage.getItem(TOKEN)) {
         return (
             <div>
@@ -121,7 +99,7 @@ const ClassRoom = () => {
                     </div>
                 </div>
                 <CreateClass addClass={handleAddNewClass} />
-                {/* <JoinClass joinClass={handleJoinClass} /> */}
+                <JoinClass joinClass={handleJoinClass} />
             </div>
         )
 
