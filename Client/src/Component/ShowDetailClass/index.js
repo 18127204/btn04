@@ -178,7 +178,7 @@ const ShowDetailClass = () => {
                 alert(res.data.message);
             }
             else{
-                getAllListTeachers();
+                getAllListStudents();
             }
         });
         promise.catch((error) => {
@@ -268,13 +268,6 @@ const ShowDetailClass = () => {
             </div>
             <InvitateTeacher invitedTeacher={handleInvitedTeacher} />
             <InvitateStudent invitedStudent={handleInvitedStudent} />
-            {/*
-             <ModalAddTeacher invitedTeacher={this.handleInvitedTeacher} />
-            <ModalAddStudent invitedStudent={this.handleInvitedStudent} />
-            <ModalAddAssignment addNewAssignment={this.handleAddNewAssignment} />
-            <ModalEditAssignment infoAssignment={this.state.infoAssignment} editAssigment={this.handleEditAssigment} /> */}
-
-
         </div>
     )
 }
