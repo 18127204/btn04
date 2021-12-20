@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
-var pool = require('./pool');
-var passport = require('../modules/passport');
+var pool=require('../Pool');
+var passport=require('../../modules/passport');
 
 
 
@@ -157,7 +157,7 @@ router.get('/api/ShowListStudents/:link', function (req, res, next) {
         //jwt id user user={id:'1',username:'tanthai'}
         //write code:
         const link = req.params.link;
-        const sql = `SELECT A.name, A.mssv FROM classes C INNER JOIN classaccount CA ON C.id=CA.classId INNER JOIN account A
+        const sql = `SELECT A.mssv ,A.name  FROM classes C INNER JOIN classaccount CA ON C.id=CA.classId INNER JOIN account A
         ON A.id=CA.accountId  WHERE C.link=? and CA.role=?`
         
         pool.query(sql, [link,"student"], (error, result) => {

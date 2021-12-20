@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var pool=require('./pool');
 var passport=require('../modules/passport');
+/*Identify Role in Class FINISH */
 router.get('/api/IdentifyRole/:link', function(req, res, next) {
     passport.authenticate("jwt", { session: false, }, function (err, user, info) {
         if (err) {

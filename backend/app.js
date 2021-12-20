@@ -9,19 +9,33 @@ var passport = require('./modules/passport');
 var nodemailer = require('nodemailer');
 
 //init router
+// var indexRouter = require('./routes/index');
+// var usersRouter = require('./routes/users');
+// var classRoomRouter = require('./routes/classroom');
+// var loginRouter = require('./modules/passport/loginRouter');
+// var registerRouter = require('./routes/register');
+// var sendEmailRouter = require('./routes/sendemail');
+// var assignmentRouter = require('./routes/Assignment');
+// var pointRouter = require('./routes/Point');
+// var excelRouter = require('./routes/Fileexcel');
+// var importExcelRouter=require('./routes/ImportExcel');
+// var profileRouter = require('./routes/Profile');
+// var AuthorizationRouter=require('./routes/Authorization');
+// var GoogleSigninRouter = require('./routes/GoogleSignIn')
+
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var classRoomRouter = require('./routes/classroom');
+var classRoomRouter = require('./routes/Classroom');
 var loginRouter = require('./modules/passport/loginRouter');
-var registerRouter = require('./routes/register');
-var sendEmailRouter = require('./routes/sendemail');
+var registerRouter = require('./routes/Register');
+var sendEmailRouter = require('./routes/SendEmail');
 var assignmentRouter = require('./routes/Assignment');
 var pointRouter = require('./routes/Point');
-var excelRouter = require('./routes/Fileexcel');
+var excelRouter = require('./routes/FileExcel');
 var importExcelRouter=require('./routes/ImportExcel');
 var profileRouter = require('./routes/Profile');
 var AuthorizationRouter=require('./routes/Authorization');
 var GoogleSigninRouter = require('./routes/GoogleSignIn')
+var usersRouter = require('./routes/Eliminated/users');
 var app = express();
 
 // view engine setup

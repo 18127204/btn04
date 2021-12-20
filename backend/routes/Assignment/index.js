@@ -1,7 +1,9 @@
 var express=require('express');
 var router=express.Router();
-var pool=require('./pool');
-var passport=require('../modules/passport');
+var pool=require('../Pool');
+var passport=require('../../modules/passport');
+
+
 /*Show grade structure FINISH */
 router.get('/api/ShowGradeStructure/:link', function(req, res, next) {
     passport.authenticate("jwt", { session: false, }, function (err, user, info) {
@@ -19,6 +21,36 @@ router.get('/api/ShowGradeStructure/:link', function(req, res, next) {
         ORDER BY ASS.rank ASC
         `;
         pool.query(sql,[link],(error,result)=>{
+            if(error){
+                res.send(error);
+            }
+            else{
+                res.json(result);
+                
+            }   
+        });
+    }
+    
+    )(req, res, next);
+})
+
+/*Get list assignment FINISH  */
+router.get('/api/GetALLListAssignment/:link', function(req, res, next) {
+    passport.authenticate("jwt", { session: false, }, function (err, user, info) {
+        if (err) {
+            return next(err);
+        }
+        if (!user) {
+            res.header({ "Access-Control-Allow-Origin": "*" });
+            res.status(401);
+            res.send({ message: info.message, success: false });
+            return;
+        }
+        let link=req.params.link;
+        let sql=`SELECT ass.id,ass.classId,ass.name,ass.creatorId,ass.description,ass.grade,ass.rank FROM classaccount cla INNER JOIN classes c ON cla.classId=c.id INNER JOIN assignment ass
+        ON c.id=ass.classId WHERE c.link=? and cla.accountId=?
+        `;
+        pool.query(sql,[link,user.id],(error,result)=>{
             if(error){
                 res.send(error);
             }
@@ -75,7 +107,6 @@ router.post('/api/CreateAssignment', function(req, res, next) {
     }
     )(req, res, next);
 })
-
 
 /*Delete a assignment FINISH*/
 router.delete('/api/DeleteAssignment', function(req, res, next) {
