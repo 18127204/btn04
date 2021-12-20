@@ -10,6 +10,7 @@ import InvitateStudent from '../Invitation/InvitateStudent';
 import ExportStudent from '../ExportStudent';
 import TabPeople from '../TabPeople';
 import TabDetail from '../TabDetail';
+import CreateAssignment from '../CreateAssignment';
 
 const ShowDetailClass = () => {
     const { link } = useParams();
@@ -107,6 +108,7 @@ const ShowDetailClass = () => {
         });
     }
 
+    
     const getAllListAssignments = () => {
         let promise = Axios({
             method: 'GET',
@@ -161,7 +163,20 @@ const ShowDetailClass = () => {
         }
     }
 
-
+    const handleAddAssignment = (dataSend) => {
+        let promise = Axios({
+            url: `${URL_API}/assignment/api/CreateAssignment`,
+            method: 'POST',
+            data: {link:link,name:dataSend.name,description:dataSend.description,grade:dataSend.grade},
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem(TOKEN) }
+        });
+        promise.then((res) => {
+            console.log('Addassign success');
+        });
+        promise.catch((error) => {
+            console.log('Addassign failed');
+        });
+    }
     const handleInvitedTeacher = (info) => {
         let link = URL_FRONTEND + '/classroom/' + infoClass.link;
         let dataSend = { ...info, link };
@@ -214,7 +229,7 @@ const ShowDetailClass = () => {
             return lst.map((bt, index) => {
                 return (
                     <Draggable key={index} draggableId={index + ''} index={index}>
-                        {(provided) => 
+                        {(provided) =>
                         (<div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
                             <p>{index + 1}</p>
                             <p>{bt.name}</p>
@@ -278,6 +293,9 @@ const ShowDetailClass = () => {
 
                 <div id="Assignment" className="container tab-pane fade container">
                     <div className='row'>
+                        <div>{(role === 'teacher') ? (<button className='btn btn-success' data-toggle="modal" data-target="#modelAddAssignment" >Add assignment</button>) : ('')}
+                            < CreateAssignment addass={handleAddAssignment} />
+                        </div>
                         {/* <button className='btn btn-success' style={{ width: '130px', marginLeft: 'auto' }} data-toggle="modal" data-target="#modelIdAddAssignment">Thêm bài tập</button> */}
                         <DragDropContext onDragEnd={onDragEnd}>
                             <Droppable droppableId='dp1'>
