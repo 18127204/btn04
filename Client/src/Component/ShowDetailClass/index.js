@@ -7,11 +7,12 @@ import Axios from 'axios';
 import HeaderClassRoom from '../HeaderClassRoom';
 import InvitateTeacher from '../Invitation/InvitateTeacher';
 import InvitateStudent from '../Invitation/InvitateStudent';
-import ExportStudent from '../ExportStudent';
 import TabPeople from '../TabPeople';
 import TabDetail from '../TabDetail';
 import CreateAssignment from '../CreateAssignment';
+import ExportAssignmentGrade from '../ExportAssignmentGrade';
 
+import UploadGradeAssignment from '../UploadGradeAssignment';
 const ShowDetailClass = () => {
     const { link } = useParams();
     const [infoClass, setInfoClass] = useState([]);
@@ -20,7 +21,9 @@ const ShowDetailClass = () => {
     const [lstTeachers, setLstTeachers] = useState([]);
     const [lstStudents, setLstStudents] = useState([]);
     const [lstAsments, setLstAsments] = useState([]);
+
     const fileNameStudentList = "StudentList"; // here enter filename for your excel file
+    const fileNameAssignmentGrade = "GradeAssignment";
     //Run 1st
     useEffect(() => {
         if (localStorage.getItem(TOKEN)) {
@@ -108,7 +111,6 @@ const ShowDetailClass = () => {
         });
     }
 
-    
     const getAllListAssignments = () => {
         let promise = Axios({
             method: 'GET',
@@ -146,10 +148,8 @@ const ShowDetailClass = () => {
 
     }
 
-
     const displayTeacherStudent = (lst) => {
         if (lst.length) {
-            console.log('displayStudent', lst);
             return lst.map((item, index) => {
                 return (
                     <tr key={index}>
@@ -163,20 +163,6 @@ const ShowDetailClass = () => {
         }
     }
 
-    const handleAddAssignment = (dataSend) => {
-        let promise = Axios({
-            url: `${URL_API}/assignment/api/CreateAssignment`,
-            method: 'POST',
-            data: {link:link,name:dataSend.name,description:dataSend.description,grade:dataSend.grade},
-            headers: { 'Authorization': 'Bearer ' + localStorage.getItem(TOKEN) }
-        });
-        promise.then((res) => {
-            console.log('Addassign success');
-        });
-        promise.catch((error) => {
-            console.log('Addassign failed');
-        });
-    }
     const handleInvitedTeacher = (info) => {
         let link = URL_FRONTEND + '/classroom/' + infoClass.link;
         let dataSend = { ...info, link };
@@ -223,24 +209,30 @@ const ShowDetailClass = () => {
         });
     }
 
-    //f1
     const handleDisplayAssignment = (lst) => {
         if (lst.length) {
             return lst.map((bt, index) => {
                 return (
                     <Draggable key={index} draggableId={index + ''} index={index}>
                         {(provided) =>
-                        (<div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                            <p>{index + 1}</p>
-                            <p>{bt.name}</p>
-                            <p>{bt.description}</p>
-                            <button className='btn btn-primary '>Chỉnh sửa</button>
-                            <button className='btn btn-danger'>Xóa</button>
-                            {/*<td>
-                                 <button className='btn btn-primary mr-auto' onClick={() => this.handleGetInfoAssigment(bt.viTri, bt)} data-toggle="modal" data-target="#modelIdEditAssignment">Chỉnh sửa</button>
-                                <button className='btn btn-danger' onClick={() => this.handleRemoveAssigment(bt)}>Xóa</button> 
-                            </td>*/}
-                        </div>)
+                        (
+                            <div className="card" ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                                <div className="card-header">
+                                    Name Assignment : {bt.name}
+                                </div>
+                                <div className="card-body">
+                                    <h5 className="card-title">Description: {bt.description}</h5>
+                                    <p className="card-text">Grade: {bt.grade}</p>
+                                    <div className='d-flex flex-row'>
+                                        <button className='btn btn-warning text-white mr-3'>Update</button>
+                                        <button className='btn btn-danger mr-3'>Remove</button>
+                                        <ExportAssignmentGrade infoAss={bt} fileName={fileNameAssignmentGrade} />
+                                        <UploadGradeAssignment infoAss={bt}/>
+                                    </div>
+
+                                </div>
+
+                            </div>)
                         }
                     </Draggable>
                 )
@@ -248,22 +240,50 @@ const ShowDetailClass = () => {
         }
         else {
             return (
-                <div className="card">
-                    <div className="card-header">
-                        Featured
-                    </div>
-                    <div className="card-body">
-                        <h5 className="card-title">Special title treatment</h5>
-                        <p className="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                        <a href="#" className="btn btn-primary">Go somewhere</a>
-                    </div>
-                </div>
-
+                <div></div>
             );
         }
 
     }
 
+    const handleAddAssignment = (dataSend) => {
+        let promise = Axios({
+            url: `${URL_API}/assignment/api/CreateAssignment`,
+            method: 'POST',
+            data: { link: link, name: dataSend.name, description: dataSend.description, grade: dataSend.grade, rank: lstAsments.length + 1 },
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem(TOKEN) }
+        });
+        promise.then((res) => {
+            getAllListAssignments();
+            getInfoGradeStructure();
+            console.log('handleAddAssignment success');
+        });
+        promise.catch((error) => {
+            console.log('handleAddAssignment failed');
+        });
+    }
+
+    const handleUpdateRank = (lst) => {
+        return lst.filter((bt, index) => {
+            return bt.rank = index + 1
+        })
+    }
+
+    const arrangeAssignmentPostition = (lst) => {
+        let promise = Axios({
+            method: 'PUT',
+            url: `${URL_API}/assignment/api/ArrangeAssignment/${link}`,
+            data: { dataSend: JSON.stringify(lst) },
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem(TOKEN) }
+        });
+        promise.then((res) => {
+            console.log('arrangeAssignmentPostition', res.data);
+            setLstAsments(lst);
+        });
+        promise.catch((error) => {
+            console.log('arrangeAssignmentPostition failed', error);
+        });
+    }
     /////
     const onDragEnd = (result) => {
         const { destination, source, reason } = result;
@@ -278,7 +298,9 @@ const ShowDetailClass = () => {
         const droppedUser = lstAsments[source.index];
         lstAssignments.splice(source.index, 1);
         lstAssignments.splice(destination.index, 0, droppedUser);
-        setLstAsments(lstAssignments);
+        const tempLstAsgment = handleUpdateRank(lstAssignments);
+        arrangeAssignmentPostition(tempLstAsgment);
+
     }
 
     return (
@@ -293,10 +315,10 @@ const ShowDetailClass = () => {
 
                 <div id="Assignment" className="container tab-pane fade container">
                     <div className='row'>
-                        <div>{(role === 'teacher') ? (<button className='btn btn-success' data-toggle="modal" data-target="#modelAddAssignment" >Add assignment</button>) : ('')}
+                        <div>
+                            {(role === 'teacher') ? (<button className='btn btn-success' data-toggle="modal" data-target="#modelAddAssignment" >Add assignment</button>) : ('')}
                             < CreateAssignment addass={handleAddAssignment} />
                         </div>
-                        {/* <button className='btn btn-success' style={{ width: '130px', marginLeft: 'auto' }} data-toggle="modal" data-target="#modelIdAddAssignment">Thêm bài tập</button> */}
                         <DragDropContext onDragEnd={onDragEnd}>
                             <Droppable droppableId='dp1'>
                                 {(provided) => (

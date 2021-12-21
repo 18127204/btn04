@@ -1,11 +1,11 @@
-var express=require('express');
-var router=express.Router();
-var pool=require('../Pool');
-var passport=require('../../modules/passport');
+var express = require('express');
+var router = express.Router();
+var pool = require('../Pool');
+var passport = require('../../modules/passport');
 
 
 /*Show grade structure FINISH */
-router.get('/api/ShowGradeStructure/:link', function(req, res, next) {
+router.get('/api/ShowGradeStructure/:link', function (req, res, next) {
     passport.authenticate("jwt", { session: false, }, function (err, user, info) {
         if (err) {
             return next(err);
@@ -16,26 +16,26 @@ router.get('/api/ShowGradeStructure/:link', function(req, res, next) {
             res.send({ message: info.message, success: false });
             return;
         }
-        let link=req.params.link;
-        let sql=`SELECT Ass.name,Ass.grade FROM classes CL INNER JOIN assignment Ass ON Ass.classId = CL.id WHERE CL.link=?
+        let link = req.params.link;
+        let sql = `SELECT Ass.name,Ass.grade FROM classes CL INNER JOIN assignment Ass ON Ass.classId = CL.id WHERE CL.link=?
         ORDER BY ASS.rank ASC
         `;
-        pool.query(sql,[link],(error,result)=>{
-            if(error){
+        pool.query(sql, [link], (error, result) => {
+            if (error) {
                 res.send(error);
             }
-            else{
+            else {
                 res.json(result);
-                
-            }   
+
+            }
         });
     }
-    
+
     )(req, res, next);
 })
 
 /*Get list assignment FINISH  */
-router.get('/api/GetALLListAssignment/:link', function(req, res, next) {
+router.get('/api/GetALLListAssignment/:link', function (req, res, next) {
     passport.authenticate("jwt", { session: false, }, function (err, user, info) {
         if (err) {
             return next(err);
@@ -46,26 +46,26 @@ router.get('/api/GetALLListAssignment/:link', function(req, res, next) {
             res.send({ message: info.message, success: false });
             return;
         }
-        let link=req.params.link;
-        let sql=`SELECT ass.id,ass.classId,ass.name,ass.creatorId,ass.description,ass.grade,ass.rank FROM classaccount cla INNER JOIN classes c ON cla.classId=c.id INNER JOIN assignment ass
-        ON c.id=ass.classId WHERE c.link=? and cla.accountId=?
+        let link = req.params.link;
+        let sql = `SELECT ass.id,ass.classId,ass.name,ass.creatorId,ass.description,ass.grade,ass.rank FROM classaccount cla INNER JOIN classes c ON cla.classId=c.id INNER JOIN assignment ass
+        ON c.id=ass.classId WHERE c.link=? and cla.accountId=? ORDER BY ASS.rank ASC
         `;
-        pool.query(sql,[link,user.id],(error,result)=>{
-            if(error){
+        pool.query(sql, [link, user.id], (error, result) => {
+            if (error) {
                 res.send(error);
             }
-            else{
+            else {
                 res.json(result);
-                
-            }   
+
+            }
         });
     }
-    
+
     )(req, res, next);
 })
 
 /*  Create a assignment FINISH*/
-router.post('/api/CreateAssignment', function(req, res, next) {
+router.post('/api/CreateAssignment', function (req, res, next) {
     passport.authenticate("jwt", { session: false, }, function (err, user, info) {
         if (err) {
             return next(err);
@@ -76,40 +76,40 @@ router.post('/api/CreateAssignment', function(req, res, next) {
             res.send({ message: info.message, success: false });
             return;
         }
-        let {link,name,description,grade} = req.body;
-        let sql=`SELECT cl.role,c.id FROM classaccount cl INNER JOIN classes c ON cl.classId=c.id WHERE link=?
+        let { link, name, description, grade, rank } = req.body;
+        let sql = `SELECT cl.role,c.id FROM classaccount cl INNER JOIN classes c ON cl.classId=c.id WHERE link=?
         and cl.accountId=?`;
-        pool.query(sql,[link,user.id],(error,result)=>{
-            if(error){
+        pool.query(sql, [link, user.id], (error, result) => {
+            if (error) {
                 res.send(error);
             }
-            else{
-                if (result[0].role ==="teacher") {
-    
-                    let sqlInsert = `INSERT INTO assignment (classId,name,creatorId,description,grade) VALUES(?,?,?,?,?)`;
-                    pool.query(sqlInsert,[result[0].id,name,user.id,description,grade],(error,result)=> {
-                        if(error){
+            else {
+                if (result[0].role === "teacher") {
+
+                    let sqlInsert = `INSERT INTO assignment (classId,name,creatorId,description,grade,rank) VALUES(?,?,?,?,?,?)`;
+                    pool.query(sqlInsert, [result[0].id, name, user.id, description, grade, rank], (error, result) => {
+                        if (error) {
                             res.send(error);
                         }
                         else {
-                            res.json({message:'insert assignment success'});
+                            res.json({ message: 'insert assignment success' });
                         }
 
                     })
 
                 }
                 else {
-                    res.json({message:'false'});
+                    res.json({ message: 'false' });
                 }
-            
-            }   
+
+            }
         });
     }
     )(req, res, next);
 })
 
 /*Delete a assignment FINISH*/
-router.delete('/api/DeleteAssignment', function(req, res, next) {
+router.delete('/api/DeleteAssignment', function (req, res, next) {
     passport.authenticate("jwt", { session: false, }, function (err, user, info) {
         if (err) {
             return next(err);
@@ -120,24 +120,24 @@ router.delete('/api/DeleteAssignment', function(req, res, next) {
             res.send({ message: info.message, success: false });
             return;
         }
-        let id=req.body.id;
-        let sql=`DELETE FROM assignment WHERE id=?`;
-        pool.query(sql,[id],(error,result)=>{
-            if(error){
+        let id = req.body.id;
+        let sql = `DELETE FROM assignment WHERE id=?`;
+        pool.query(sql, [id], (error, result) => {
+            if (error) {
                 res.send(error);
             }
-            else{
-                res.json({message:"delete assignment success"});
-                
-            }   
+            else {
+                res.json({ message: "delete assignment success" });
+
+            }
         });
     }
-    
+
     )(req, res, next);
 })
 
 /*Update a assignment FINISH */
-router.put('/api/UpdateAssignment', function(req, res, next) {
+router.put('/api/UpdateAssignment', function (req, res, next) {
     passport.authenticate("jwt", { session: false, }, function (err, user, info) {
         if (err) {
             return next(err);
@@ -148,40 +148,40 @@ router.put('/api/UpdateAssignment', function(req, res, next) {
             res.send({ message: info.message, success: false });
             return;
         }
-        let { link,id,name,description,grade} = req.body;
-        let sql=`SELECT cl.role,c.id FROM classaccount cl INNER JOIN classes c ON cl.classId=c.id WHERE link=?
+        let { link, id, name, description, grade } = req.body;
+        let sql = `SELECT cl.role,c.id FROM classaccount cl INNER JOIN classes c ON cl.classId=c.id WHERE link=?
         and cl.accountId=?`;
-        pool.query(sql,[link,user.id],(error,result)=>{
-            if(error){
+        pool.query(sql, [link, user.id], (error, result) => {
+            if (error) {
                 res.send(error);
             }
-            else{
-                if (result[0].role ==="teacher") {
-    
+            else {
+                if (result[0].role === "teacher") {
+
                     let sqlInsert = `UPDATE assignment SET name=?,description=?,grade=? WHERE id=?`;
-                    pool.query(sqlInsert,[name,description,grade,id],(error,result)=> {
-                        if(error){
+                    pool.query(sqlInsert, [name, description, grade, id], (error, result) => {
+                        if (error) {
                             res.send(error);
                         }
                         else {
-                            res.json({message:'Update assignment success'});
+                            res.json({ message: 'Update assignment success' });
                         }
 
                     })
 
                 }
                 else {
-                    res.json({message:'false'});
+                    res.json({ message: 'false' });
                 }
-            
-            }   
+
+            }
         });
     }
     )(req, res, next);
 })
 
-/*Arrange  assignment NOT FINISH */
-router.put('/api/ArrangeAssignment/:link', function(req, res, next) {
+/*Arrange  assignments FINISH */
+router.put('/api/ArrangeAssignment/:link', function (req, res, next) {
     passport.authenticate("jwt", { session: false, }, function (err, user, info) {
         if (err) {
             return next(err);
@@ -192,40 +192,75 @@ router.put('/api/ArrangeAssignment/:link', function(req, res, next) {
             res.send({ message: info.message, success: false });
             return;
         }
-        let {link,name,description,grade} = req.body;
-        let sql=`SELECT cl.role,c.id FROM classaccount cl INNER JOIN classes c ON cl.classId=c.id WHERE link=?
-        and cl.accountId=?`;
-        pool.query(sql,[link,user.id],(error,result)=>{
-            if(error){
-                res.send(error);
-            }
-            else{
-                if (result[0].role ==="teacher") {
-    
-                    let sqlInsert = `INSERT INTO assignment (classId,name,creatorId,description,grade) VALUES(?,?,?,?,?)`;
-                    pool.query(sqlInsert,[result[0].id,name,user.id,description,grade],(error,result)=> {
-                        if(error){
-                            res.send(error);
-                        }
-                        else {
-                            res.json({message:'insert assignment success'});
-                        }
-
-                    })
-
+        let { dataSend } = req.body;
+        const lstAssignment = JSON.parse(dataSend);
+        for (let i = 0; i < lstAssignment.length; i++) {
+            let sqlUpdateRank = `UPDATE assignment SET rank = ? WHERE id = ?`;
+            pool.query(sqlUpdateRank, [lstAssignment[i].rank, lstAssignment[i].id], (error, result) => {
+                if (error) {
+                    res.send(error);
                 }
-                else {
-                    res.json({message:'false'});
-                }
-            
-            }   
-        });
+            })
+        }
+        res.json({ message: "update assignment success" });
     }
     )(req, res, next);
 })
 
+/*Get Assignment Grades FINISH  */
+router.get('/api/GetAssignmentGrades/:assignmentId', function (req, res, next) {
+    passport.authenticate("jwt", { session: false, }, function (err, user, info) {
+        if (err) {
+            return next(err);
+        }
+        if (!user) {
+            res.header({ "Access-Control-Allow-Origin": "*" });
+            res.status(401);
+            res.send({ message: info.message, success: false });
+            return;
+        }
+        let idAss = req.params.assignmentId;
+        let sql = `SELECT g.mssv,g.grade FROM grade g INNER JOIN assignment ass ON g.assignmentId=ass.id WHERE ass.id=?`;
+        pool.query(sql, [idAss], (error, result) => {
+            if (error) {
+                res.send(error);
+            }
+            else {
+                res.json(result)
 
+            }
+        });
+    }
+    )(req, res, next);
 
+})
+
+/*UPLOAD Grade Students Assignment FINISH  */
+router.post('/api/GradeStudentsAssignment', function (req, res, next) {
+    passport.authenticate("jwt", { session: false, }, function (err, user, info) {
+        if (err) {
+            return next(err);
+        }
+        if (!user) {
+            res.header({ "Access-Control-Allow-Origin": "*" });
+            res.status(401);
+            res.send({ message: info.message, success: false });
+            return;
+        }
+        let { lstAss, assignmentId } = req.body;
+        const lstAssignment = JSON.parse(lstAss);
+        for (let i = 0; i < lstAssignment.length; i++) {
+            let sqlInsertGrade = `INSERT INTO grade (mssv,grade,assignmentId) VALUES (?,?,?) ON DUPLICATE KEY UPDATE grade=?`;
+            pool.query(sqlInsertGrade, [lstAssignment[i].StudentID, lstAssignment[i].Grade, assignmentId, lstAssignment[i].Grade], (error, result) => {
+                if (error) {
+                    res.send(error);
+                }
+            })
+        }
+        res.json({ message: "Upload grade assignment success" });
+    }
+    )(req, res, next);
+})
 
 
 
@@ -243,7 +278,7 @@ router.put('/api/ArrangeAssignment/:link', function(req, res, next) {
 //         else{
 //             // console.log('GetALLLis: ',result);
 //             res.json(result);
-            
+
 //         }   
 //     });
 // });
@@ -277,7 +312,7 @@ router.put('/api/ArrangeAssignment/:link', function(req, res, next) {
 //         }
 //         else{
 //             res.json({message:'delete  assignment success'});
-            
+
 //         }   
 //     });
 
@@ -296,11 +331,11 @@ router.put('/api/ArrangeAssignment/:link', function(req, res, next) {
 //             res.json({message:'update an assignment fail'});
 //         }
 //         else{
-            
+
 //             res.json({message:"sucess"});
 //         }   
 //     });
 
 // });
 
-module.exports= router;
+module.exports = router;
