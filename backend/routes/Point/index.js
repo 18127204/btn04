@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var pool=require('../Pool');
 var passport=require('../../modules/passport');
+const { response } = require('express');
 
 /*Get name assignment based on idLop F*/
 router.get('/api/getNameAssignment/:idLop', function (req, res, next) {
@@ -164,4 +165,74 @@ router.get('/api/getStudentWithPointAssignment/:idLop', function (req, res, next
      */
 });
 
+
+router.post('/api/UploadStudentsExcelFile/:link', function (req, res, next) {
+    passport.authenticate("jwt", { session: false, }, function (err, user, info) {
+        if (err) {
+            return next(err);
+        }
+        if (!user) {
+            res.header({ "Access-Control-Allow-Origin": "*" });
+            res.status(401);
+            res.send({ message: info.message, success: false });
+            return;
+        }
+        let link = req.params.link;
+        let arr = [{mssv:"18127192",fullName:"quang"},{mssv:"18127111",fullName:"tan"}];
+        // let datasend= req.body.dataSend;
+        // let arr =JSON.parse(datasend);
+        // var stack = [];
+        // var count = 0;
+        // let i = 1;
+        // while (i <= datasend.length-1) {
+        //     let tem ={};
+        //     if (datasend[i]=='{') {
+        //         let mssv = datasend.substring(i+1,i+5);
+        //         i+=6; 
+        //         let tem1 =""
+        //         while (datasend[i]!=','){
+        //             tem1+=datasend[i];
+        //             i+=1;
+        //         }
+        //         tem[mssv]=tem1;
+        //         let fullName = datasend.substring(i+1,i+9);
+        //         i+=10;
+        //         tem1=""
+        //         while (datasend[i]!='}') {
+        //             tem1+=datasend[i];
+        //             i+=1;
+        //         }
+        //         tem[fullName]=tem1;
+        //         i+=1
+        //     }
+        //     stack.push(tem)
+        //     i++;
+        // }
+        let sql = `SELECT DISTINCT id  FROM classes WHERE link =?`;
+        pool.query(sql, [link], (error, result) => {
+            if (error) {
+                res.send(error);
+            }
+            else {
+                let ID = result[0].id;
+                for(let i = 0 ; i<arr.length;i++) {
+                    let sqlinsert = `INSERT INTO student (mssv,classId, fullName)
+                    VALUES (?,?,?)`;
+
+                    pool.query(sqlinsert, [arr[i].mssv,ID,arr[i].fullName], (error, result1) => {
+                        if (error) {
+                            res.send(error);
+                        }
+                        else {
+                            res.json({message:"insert student success"});
+                           
+                        }
+                    });
+
+                }
+            }
+        });
+    }
+    )(req, res, next);
+});
 module.exports = router;
