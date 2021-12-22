@@ -235,4 +235,53 @@ router.post('/api/UploadStudentsExcelFile/:link', function (req, res, next) {
     }
     )(req, res, next);
 });
+
+
+router.get('/api/gg/:link',function (req, res, next) {
+    passport.authenticate("jwt", { session: false, }, function (err, user, info) {
+        if (err) {
+            return next(err);
+        }
+        if (!user) {
+            res.header({ "Access-Control-Allow-Origin": "*" });
+            res.status(401);
+            res.send({ message: info.message, success: false });
+            return;
+        }
+        let link = req.params.link;
+        let sqlaccount = `SELECT S.fullName,G.grade,G.mssv,G.assignmentId FROM grade G INNER JOIN assignment Ass ON G.assignmentId=Ass.id
+                        INNER JOIN student S on S.mssv=G.mssv 
+                        INNER JOIN account A ON A.mssv=G.mssv 
+                        INNER JOIN classes CL ON CL.id=Ass.classId WHERE CL.link=?`;
+        pool.query(sqlaccount, [link], (error, result) => {
+            if (error) {
+                res.send(error);
+            }
+            else {
+                let sqlNotacc = `SELECT S.fullName , G.grade, G.mssv, G.assignmentId  FROM grade G
+                            INNER JOIN student S ON G.mssv = S.mssv WHERE G.mssv not in ( SELECT G1.mssv  FROM assignment Ass  
+                         INNER JOIN grade G1 ON Ass.id = G1.assignmentId 
+                         INNER JOIN account C ON C.mssv = G1.mssv 
+                         INNER JOIN classes CL ON CL.id=Ass.classId
+                         WHERE CL.link =? )`;
+                pool.query(sqlNotacc, [link], (error, result1) => {
+                    if (error) {
+                        res.send(error);
+                    }
+                    else {
+                       let final = result.concat(result1);
+                       res.json(final);
+                    }
+                });
+               
+            }
+        });
+    }
+    )(req, res, next);
+
+})
+
+
+
+
 module.exports = router;
