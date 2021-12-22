@@ -282,6 +282,42 @@ router.get('/api/gg/:link',function (req, res, next) {
 })
 
 
+router.put('/api/UpdatePointAssignmentStudent/:link', function (req, res, next) {
+    passport.authenticate("jwt", { session: false, }, function (err, user, info) {
+        if (err) {
+            return next(err);
+        }
+        if (!user) {
+            res.header({ "Access-Control-Allow-Origin": "*" });
+            res.status(401);
+            res.send({ message: info.message, success: false });
+            return;
+        }
+        let link =req.params.link;
+        const sql = `SELECT cl.role FROM classaccount cl INNER JOIN classes c ON cl.classId=c.id WHERE link=?
+        and cl.accountId=?`;
+        pool.query(sql, [link,user.id], (error, result) => {
+            if (error) {
+                res.send(error);
+            }
+            else {
+                if (result[0].role==="teacher") {
+                    let sqlUpdate =`UPDATE grade
+                    SET grade = ?
+                    WHERE mssv=? and assignmentId=?`;
+
+                    pool.query(sqlUpdate, [link,user.id], (error, result) => {
+                        if (error) {
+                            res.send(error);
+                        }
+                    });
+                    
+                }
+            }
+        });
+    }
+    )(req, res, next);
+});
 
 
 module.exports = router;
