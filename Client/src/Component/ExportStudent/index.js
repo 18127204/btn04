@@ -14,7 +14,7 @@ const ExportStudent = ({ lstData, fileName }) => {
     };
 
     return (
-        <button className="btn btn-success" onClick={(event) => { exportToCSV(lstData, fileName) } }>StudentList</button>
+        <button className="btn btn-success" onClick={(event) => { exportToCSV(lstData, fileName) } }>Download StudentList</button>
     )
 }
 

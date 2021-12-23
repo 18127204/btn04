@@ -4,7 +4,7 @@ const CreateAssignment = ({addass}) => {
         {
             name: '',
             description: '',
-            grade:''
+            grade:'',
         }
     )
     const handleChange = (e) => {

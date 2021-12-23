@@ -11,8 +11,8 @@ import TabPeople from '../TabPeople';
 import TabDetail from '../TabDetail';
 import CreateAssignment from '../CreateAssignment';
 import ExportAssignmentGrade from '../ExportAssignmentGrade';
-
 import UploadGradeAssignment from '../UploadGradeAssignment';
+import TabGrade from '../TabGrade';
 const ShowDetailClass = () => {
     const { link } = useParams();
     const [infoClass, setInfoClass] = useState([]);
@@ -223,13 +223,16 @@ const ShowDetailClass = () => {
                                 <div className="card-body">
                                     <h5 className="card-title">Description: {bt.description}</h5>
                                     <p className="card-text">Grade: {bt.grade}</p>
-                                    <div className='d-flex flex-row'>
-                                        <button className='btn btn-warning text-white mr-3'>Update</button>
-                                        <button className='btn btn-danger mr-3'>Remove</button>
-                                        <ExportAssignmentGrade infoAss={bt} fileName={fileNameAssignmentGrade} />
-                                        <UploadGradeAssignment infoAss={bt}/>
-                                    </div>
-
+                                    {
+                                        (role === 'teacher') ? (
+                                            <div className='d-flex flex-row'>
+                                                <button className='btn btn-warning text-white mr-3'>Update</button>
+                                                <button className='btn btn-danger mr-3'>Remove</button>
+                                                <ExportAssignmentGrade infoAss={bt} fileName={fileNameAssignmentGrade} />
+                                                <UploadGradeAssignment infoAss={bt} />
+                                            </div>
+                                        ) : ('')
+                                    }
                                 </div>
 
                             </div>)
@@ -334,10 +337,8 @@ const ShowDetailClass = () => {
 
                 <TabPeople role={role} lstStudents={lstStudents} lstTeachers={lstTeachers}
                     fileNameStudentList={fileNameStudentList} displayTeacherStudent={displayTeacherStudent} />
-
-                <div id="Grade" className="container tab-pane fade container">
-                    this is point
-                </div>
+                <TabGrade role={role} link={link}/>
+                
 
             </div>
             <InvitateTeacher invitedTeacher={handleInvitedTeacher} />

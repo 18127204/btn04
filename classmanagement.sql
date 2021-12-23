@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th12 06, 2021 lúc 06:50 AM
+-- Thời gian đã tạo: Th12 23, 2021 lúc 04:46 PM
 -- Phiên bản máy phục vụ: 10.4.21-MariaDB
 -- Phiên bản PHP: 8.0.12
 
@@ -43,13 +43,14 @@ CREATE TABLE `account` (
 --
 
 INSERT INTO `account` (`id`, `username`, `password`, `googleId`, `email`, `name`, `phone`, `mssv`) VALUES
-(1, 'tanthai', '123456', '', 'tanthai172k@gmail.com', 'Tan Thai', '1111', '18127204'),
+(1, 'tanthai', '123456', '109701161159153395364', 'tanthai172k@gmail.com', 'Tan Thai', '1111', '18127204'),
 (2, 'quangtran', '123456', '', 'abc@gmail.com', 'Tran Minh Quang', '4444', '18127172'),
 (3, 'nguyenxi', '11111', '', 'tuhoa123abc@gmail.com', 'Nguyen Xi', '55555', '18127111'),
 (4, 'nguyenan', '11111', '', 'nvan@gmail.com', 'Nguyen An', '55555666', '18127166'),
 (5, 'nguyenbinh', '11111', '', 'nvbinh@gmail.com', 'Nguyen An Binh', '55555666', '18127167'),
 (6, 'nguyennhac', '11111', '', 'nnhac@gmail.com', 'Nguyen Nhac', '333', '18127777'),
-(7, 'nguyensinh', '11111', '', 'nsinhc@gmail.com', 'Nguyen Sinh', '333', '18127774');
+(7, 'nguyensinh', '11111', '', 'quangminhtran323@gmail.com', 'Nguyen Sinh', '333', '18127774'),
+(8, 'tanathai', '123456', '', 'thainhattan123abc@gmail.com', 'tanathai', '342686566', '');
 
 -- --------------------------------------------------------
 
@@ -72,10 +73,12 @@ CREATE TABLE `assignment` (
 --
 
 INSERT INTO `assignment` (`id`, `classId`, `name`, `creatorId`, `description`, `grade`, `rank`) VALUES
-(1, 1, 'BTVN01', 1, 'practice function', 5, 1),
-(2, 1, 'BTVN02', 1, 'practice vector', 5, 2),
-(3, 1, 'Midterm', 1, 'practice complex number', 10, 3),
-(4, 1, 'Final', 1, 'practice circle', 3, 4);
+(1, 1, 'BTVN01', 1, 'practice function', 1, 4),
+(2, 1, 'BTVN02', 1, 'practice vector', 1, 5),
+(3, 1, 'Midterm', 1, 'practice complex number', 2, 3),
+(4, 1, 'Final', 1, 'practice circle', 4, 6),
+(5, 1, 'BTVN03', 1, 'Practice caro', 1, 1),
+(6, 1, 'btcn000', 1, 'hihi', 1, 2);
 
 -- --------------------------------------------------------
 
@@ -96,11 +99,26 @@ CREATE TABLE `classaccount` (
 INSERT INTO `classaccount` (`accountId`, `classId`, `role`) VALUES
 (1, 1, 'teacher'),
 (1, 2, 'teacher'),
+(1, 4, 'teacher'),
+(1, 5, 'teacher'),
+(1, 6, 'teacher'),
+(1, 7, 'teacher'),
+(1, 8, 'teacher'),
+(1, 9, 'teacher'),
+(1, 10, 'teacher'),
+(1, 11, 'teacher'),
+(1, 12, 'teacher'),
+(1, 13, 'teacher'),
 (2, 1, 'student'),
 (2, 2, 'student'),
 (3, 1, 'student'),
 (4, 1, 'student'),
-(4, 2, 'student');
+(4, 2, 'student'),
+(7, 1, 'student'),
+(8, 1, 'teacher'),
+(8, 4, 'student'),
+(8, 6, 'student'),
+(8, 14, 'teacher');
 
 -- --------------------------------------------------------
 
@@ -124,7 +142,18 @@ CREATE TABLE `classes` (
 INSERT INTO `classes` (`id`, `name`, `description`, `room`, `link`, `creatorId`) VALUES
 (1, 'mobile', 'android', 'A123', '1637069808370', 1),
 (2, 'mobile advanced', 'react native', 'B111', '1637069808371', 1),
-(3, 'web basic', 'javascrip', 'C03', '1637069808407', 1);
+(3, 'web basic', 'javascrip', 'C03', '1637069808407', 1),
+(4, 'web advance', '7:30-11:30', 'F204', '1638791434437', 1),
+(5, 'HDH', '7:30-11:30', 'F111', '1638791598904', 1),
+(6, 'MMT', '7:30-11:30', 'F111', '1638791842257', 1),
+(7, 'AI', '7:30-11:30', 'F111', '1638791962583', 1),
+(8, 'MMT1', '7:30-11:30', 'F111', '1638792091674', 1),
+(9, 'MMT2', '7:30-11:30', 'F111', '1638792195964', 1),
+(10, 'MMT3', '7:30-11:30', 'F025', '1638792462905', 1),
+(11, 'MMT4', '7:30-11:30', 'F111', '1638793812299', 1),
+(12, 'MMT5', '7:30-11:30', 'F104', '1638793908658', 1),
+(13, 'MMT6', '2h-5h', 'A333', '1638840307662', 1),
+(14, 'aladan', '7:30-11:30', 'hahaha', '1639120319906', 8);
 
 -- --------------------------------------------------------
 
@@ -143,7 +172,18 @@ CREATE TABLE `grade` (
 --
 
 INSERT INTO `grade` (`mssv`, `grade`, `assignmentId`) VALUES
-('18127172', 10, 1);
+('18127111', 9, 3),
+('18127111', 10, 5),
+('18127166', 1, 3),
+('18127166', 10, 5),
+('18127167', 1, 3),
+('18127167', 10, 5),
+('18127172', 5, 3),
+('18127172', 1001, 5),
+('18127998', 1, 3),
+('18127998', 10, 5),
+('18127999', 1, 3),
+('18127999', 10, 5);
 
 -- --------------------------------------------------------
 
@@ -162,7 +202,12 @@ CREATE TABLE `student` (
 --
 
 INSERT INTO `student` (`mssv`, `classId`, `fullName`) VALUES
-('18127119', 1, 'Tran Quoc Huy');
+('18127111', 1, 'Nguyen Xi'),
+('18127166', 1, 'Nguyen An'),
+('18127167', 1, 'Nguyen An Binh'),
+('18127172', 1, 'Tran Minh Quang'),
+('18127998', 1, 'Tran Hung'),
+('18127999', 1, 'Tran Cuong');
 
 --
 -- Chỉ mục cho các bảng đã đổ
@@ -196,7 +241,13 @@ ALTER TABLE `classes`
 -- Chỉ mục cho bảng `grade`
 --
 ALTER TABLE `grade`
-  ADD PRIMARY KEY (`mssv`);
+  ADD PRIMARY KEY (`mssv`,`assignmentId`);
+
+--
+-- Chỉ mục cho bảng `student`
+--
+ALTER TABLE `student`
+  ADD PRIMARY KEY (`mssv`,`classId`);
 
 --
 -- AUTO_INCREMENT cho các bảng đã đổ
@@ -206,19 +257,19 @@ ALTER TABLE `grade`
 -- AUTO_INCREMENT cho bảng `account`
 --
 ALTER TABLE `account`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT cho bảng `assignment`
 --
 ALTER TABLE `assignment`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT cho bảng `classes`
 --
 ALTER TABLE `classes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
