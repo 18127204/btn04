@@ -13,6 +13,8 @@ import CreateAssignment from '../CreateAssignment';
 import ExportAssignmentGrade from '../ExportAssignmentGrade';
 import UploadGradeAssignment from '../UploadGradeAssignment';
 import TabGrade from '../TabGrade';
+import UpdateAssignment from '../UpdateAssignment';
+import RemoveAssignment from '../RemoveAssignment';
 const ShowDetailClass = () => {
     const { link } = useParams();
     const [infoClass, setInfoClass] = useState([]);
@@ -226,8 +228,8 @@ const ShowDetailClass = () => {
                                     {
                                         (role === 'teacher') ? (
                                             <div className='d-flex flex-row'>
-                                                <button className='btn btn-warning text-white mr-3'>Update</button>
-                                                <button className='btn btn-danger mr-3'>Remove</button>
+                                                <UpdateAssignment infoAss={bt} link={link}/>
+                                                <RemoveAssignment infoAss={bt}/>
                                                 <ExportAssignmentGrade infoAss={bt} fileName={fileNameAssignmentGrade} />
                                                 <UploadGradeAssignment infoAss={bt} />
                                             </div>

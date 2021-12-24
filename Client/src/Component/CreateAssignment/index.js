@@ -12,7 +12,6 @@ const CreateAssignment = ({addass}) => {
         setCreateAsss({ ...createAss, [name]: value })
     }
     const handleSubmit = (e) => {
-        e.preventDefault();
         addass(createAss);
     }
     return (

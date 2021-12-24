@@ -3,13 +3,16 @@ import { useState, useEffect } from 'react';
 import UploadStudentList from '../UploadStudentList'
 import Axios from 'axios';
 import { INFO, TOKEN, INFCLASS, URL_API, URL_FRONTEND } from '../../SettingValue';
+import ShowInfoStudentHavingAccount from '../ShowInfoStudentHavingAccount';
 const TabGrade = ({ role, link }) => {
     const [lstRowNameAss, setLstRowNameAss] = useState([]);
     const [lstGradeStudent, setLstGradeStudent] = useState([]);
     const [infoEditPoint, setInfoEditPoint] = useState('');
+    const [lstHasAccount, setLstHasAccount] = useState([]);
     //Run 1st
     useEffect(() => {
         getListRowNameAssignment();
+        getStudentHasAccount();
         getListAllGradeStudent();
     }, []);
 
@@ -42,9 +45,22 @@ const TabGrade = ({ role, link }) => {
         });
     }
 
+    const getStudentHasAccount = () => {
+        let promise = Axios({
+            method: 'GET',
+            url: `${URL_API}/point/api/GetStudentHaveAccount/${link}`,
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem(TOKEN) }
+        });
+        promise.then((res) => {
+            setLstHasAccount(res.data);
+        });
+        promise.catch((error) => {
+            console.log('getListAllGradeStudent failed', error);
+        });
+    }
 
     const handleUpdatePoint = (e) => {
-        e.preventDefault();
+        // e.preventDefault();
         let promise = Axios({
             method: 'PUT',
             url: `${URL_API}/point/api/UpdatePointAssigmentStudent/${link}`,
@@ -87,28 +103,44 @@ const TabGrade = ({ role, link }) => {
         const { name, value } = e.target;
         setInfoEditPoint(`${name}:${value}`);
     }
-    
-        const displayTBody = (arrayGradeStu) => {
-        let result = [];
-        for (let i = 0; i < arrayGradeStu.length; i++) {
-            let temp = [];
-            let tdGrade = arrayGradeStu[i].lstAssAndGrade.map((item, index) => {
-                return (
-                    <td key={`tdGrade${index}`}>
-                        <input type="text" className="form-control" name={`${arrayGradeStu[i].mssv}:${item.assignmentId}`}
-                            defaultValue={item.grade} onChange={handleChangeEditGrade} onBlur={handleUpdatePoint} />
-                    </td>
-                );
-            });
-            temp.push(
-                <tr key={`trGrade${i}`}>
-                    <td>{arrayGradeStu[i].mssv}-{arrayGradeStu[i].fullName}</td>
-                    {tdGrade}
-                    <td>{handleTotalGrade(lstRowNameAss, arrayGradeStu[i].lstAssAndGrade)}</td>
-                </tr>
-            )
-            result.push(temp);
+
+    const checkHavingAccount=(mssv,lstHasAccount)=>{
+        let indexFind=lstHasAccount.findIndex((item)=>{return item.mssv==mssv});
+        if(indexFind===-1){
+            return false;
         }
+        return true;
+    }
+    const getInfoStudent=(mssv,lstHasAccount)=>{
+        let indexFind=lstHasAccount.findIndex((item)=>{return item.mssv==mssv});
+        return lstHasAccount[indexFind];
+    }
+    const displayTBody = (arrayGradeStu, lstStudentHaveAcc) => {
+        console.log('arrayGradeStu', arrayGradeStu);
+        let result = [];
+        if (arrayGradeStu.length && lstStudentHaveAcc.length) {
+            for (let i = 0; i < arrayGradeStu.length; i++) {
+                let temp = [];
+                let tdGrade = arrayGradeStu[i].lstAssAndGrade.map((item, index) => {
+                    return (
+                        <td key={`tdGrade${index}`}>
+                            <input type="text" className="form-control" name={`${arrayGradeStu[i].mssv}:${item.assignmentId}`}
+                                defaultValue={item.grade} onChange={handleChangeEditGrade} onBlur={handleUpdatePoint} />
+                        </td>
+                    );
+                });
+
+                temp.push(
+                    <tr key={`trGrade${i}`}>
+                        {checkHavingAccount(arrayGradeStu[i].mssv,lstStudentHaveAcc)?(<td><ShowInfoStudentHavingAccount infoShow={getInfoStudent(arrayGradeStu[i].mssv,lstHasAccount)}/></td>):(<td>{arrayGradeStu[i].fullName}</td>)}       
+                        {tdGrade}
+                        <td>{handleTotalGrade(lstRowNameAss, arrayGradeStu[i].lstAssAndGrade)}</td>
+                    </tr>
+                )
+                result.push(temp);
+            }
+        }
+
         return result;
     }
 
@@ -124,7 +156,7 @@ const TabGrade = ({ role, link }) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {displayTBody(lstGradeStudent)}
+                    {displayTBody(lstGradeStudent, lstHasAccount)}
                 </tbody>
             </table>
 

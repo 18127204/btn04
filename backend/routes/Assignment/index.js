@@ -127,8 +127,13 @@ router.delete('/api/DeleteAssignment', function (req, res, next) {
                 res.send(error);
             }
             else {
-                res.json({ message: "delete assignment success" });
-
+                let sqlDeleteGrade=`DELETE FROM grade WHERE assignmentId=?`;
+                pool.query(sqlDeleteGrade, [id], (error, result) => {
+                    if (error) {
+                        res.send(error);
+                    }
+                    res.json({ message: "delete assignment success" });
+                })
             }
         });
     }
