@@ -61,7 +61,8 @@ router.get('/api/GetStudentsWithPoint/:link', function (req, res, next) {
         let resultSqlAccount;
         let numberStudent;
         let resultAss;
-        let sqlaccount = `SELECT S.fullName,G.grade,G.mssv,G.assignmentId FROM grade G INNER JOIN assignment Ass ON G.assignmentId=Ass.id
+        let sqlaccount = `SELECT S.fullName,G.grade,G.mssv,G.assignmentId FROM grade G 
+                        INNER JOIN assignment Ass ON G.assignmentId=Ass.id
                         INNER JOIN student S on S.mssv=G.mssv 
                         INNER JOIN account A ON A.mssv=G.mssv 
                         INNER JOIN classes CL ON CL.id=Ass.classId WHERE CL.link=?
@@ -72,63 +73,106 @@ router.get('/api/GetStudentsWithPoint/:link', function (req, res, next) {
                         INNER JOIN account C ON C.mssv = G1.mssv 
                         INNER JOIN classes CL ON CL.id=Ass.classId
                         WHERE CL.link =? )`;
+
         pool.query(sqlaccount, [link, link], (error, result) => {
             if (error) {
                 res.send(error);
             }
-            resultSqlAccount = result;
-            
-            let sqlGetNumberStudent = `SELECT COUNT(ST.mssv) as SL FROM classes CL INNER JOIN student ST 
-            ON CL.id=ST.classId WHERE CL.link=?`; /// bao nhieu thang hoc lop cung link
-            pool.query(sqlGetNumberStudent, [link], (error, result) => {
-                if (error) {
-                    res.send(error);
-                }
-                numberStudent = result[0].SL; /// so luong cua result
-                let sqlGetAllAss = `SELECT ass.id,ass.grade FROM classaccount cla INNER JOIN classes c ON cla.classId=c.id INNER JOIN assignment ass
-                ON c.id=ass.classId WHERE c.link=? and cla.accountId=? ORDER BY ASS.rank ASC`;
-                //lay all assignmen trong link
-                pool.query(sqlGetAllAss, [link, user.id], (error, result1) => {
+            /*
+
+            [{
+                "fullName": "Tran Minh Quang",
+                "grade": 5,
+                "mssv": "18127172",
+                "assignmentId": 3},
+            {
+                "fullName": "Tran Minh Quang",
+                "grade": 1001,
+                "mssv": "18127172",
+                "assignmentId": 5
+            }]
+            */
+            else {
+                let sqlnumclass = `SELECT ass.id FROM classes C INNER JOIN assignment ass
+            ON C.id=ass.classId WHERE C.link =? `
+                pool.query(sqlnumclass, [link], (error, result1) => {
                     if (error) {
                         res.send(error);
                     }
-                    resultAss = result1;
+                    let temass = []
+                    for (let assid = 0; assid < result1.length; assid++) {
+                        temass.push(result1[assid].id);
+                    }
+                    resultSqlAccount = result;
+                    let fullname = [];
+                    let Grade = [];
+                    let assignment = [];
+                    let mssv = []
+                    let fin = [];
+                    let n = result.length;
+                    for (let i = 0; i < result.length; i++) {
+                        fullname.push(result[i].fullName);
+                        mssv.push(result[i].mssv);
+                        Grade.push(result[i].grade)
+                        assignment.push(result[i].assignmentId)
+                    }
+                    let unique = assignment.filter((v, l, a) => a.indexOf(v) === l);
+                    let i = 0;
+                    let left = 0;
+                    let stack = []
+                    let lstGrade = [];
+                    let tem = [];
+                    while (i < n) {
+                        if (fullname[i] === result[left].fullName) {
+                            lstGrade.push({
+                                assignmentId: assignment[i],
+                                grade: Grade[i]
+                            })
+                            tem.push(assignment[i]);
+                            i += 1;
+                            continue
+                        }
+                        else {
+                            for (let k = 0; k < temass.length; k++) {
+                                if (tem.includes(temass[k])) {
+                                    continue;
+                                }
+                                else {
+                                    lstGrade.push({
+                                        assignmentId: temass[k],
+                                        grade: 0
+                                    })
+                                }
+                            }
+                            stack.push({ fullname: result[left].fullName, mssv: result[left].mssv, lstGrade: lstGrade })
+                            fin= fin.concat(stack)
+                            lstGrade = [];
+                            tem = []
+                            left = i;
+                            stack = []
+                        }
 
-                    let stack = [];
-
-                    /*out put
-                    [
-                        {
-                            mssv:"18127172",
-                            fullName:"tran minh quang",
-                            lstGrade:[
-                                {assignmentId:5,grade:1},
-                                {assignmentId:4,grade:0},
-                                {assignmentId:3,grade:10},
-                            ]
-                        },
-                        {
-                            mssv:"18127111",
-                            fullName:"nguyen xi",
-                            lstGrade:[
-                                {assignmentId:5,grade:10},
-                                {assignmentId:4,grade:0},
-                                {assignmentId:3,grade:1},
-                            ]
-                        },
-                    ]
-                    */
-                    
+                    }
+                    for (let k = 0; k < unique.length; k++) {
+                        if (tem.includes(unique[k])) {
+                            continue;
+                        }
+                        else {
+                            lstGrade.push({
+                                assignmentId: unique[k],
+                                grade: 0
+                            })
+                        }
+                    }
+                    stack.push({ fullname: result[left].fullName, mssv: result[left].mssv, lstGrade: lstGrade })
+                    fin=fin.concat(stack)
+                    return res.json(fin)
                 });
-            });
+            }
+
         });
 
-
-
-
-    }
-    )(req, res, next);
-
+    })(req, res, next);
 });
 
 
