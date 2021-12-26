@@ -11,7 +11,6 @@ router.post('/api', function (req, res, next) {
      const tokenId = req.body.tokenId;
     async function verify()
     {
-        //await console.log("hêheheheheh");
         const ticket =  await client.verifyIdToken({
         idToken: tokenId,
         audience: "398530816289-0muicg4r9jijupqash4l1gkg2p71tbai.apps.googleusercontent.com",
@@ -19,7 +18,7 @@ router.post('/api', function (req, res, next) {
         const payload = ticket.getPayload();
         const googleId = payload.sub;
         const mail = payload.email;
-        const sql = `SELECT * FROM account WHERE email=?`;
+        const sql = `SELECT id,username,googleId,email FROM account WHERE email=?`;
         pool.query(sql,[mail],(error,result)=>{
         if(error){
             res.send(error);
@@ -33,37 +32,25 @@ router.post('/api', function (req, res, next) {
                         if(error){
                             res.send(error);
                         }
-                        else {
-                            const finalresult ={
-                                success:true,
-                                content:result[0],
-                                tokenAccess: jwt.sign({
-                                    id:result[0].id,
-                                    username:result[0].username
-                                }, process.env.jwt_secret,
-                                { expiresIn:'1h'})
-                            };
-                            
-                            res.json(finalresult);
-                        }
 
                     })
+
                 }
-                else {
-                    res.json({messeage:"hello"});
-                }
+                const finalresult ={
+                    success:true,
+                    content:result[0],
+                    tokenAccess: jwt.sign({
+                        id:result[0].id,
+                        username:result[0].username
+                    }, process.env.jwt_secret,
+                    { expiresIn:'1h'})
+                };
+                res.json(finalresult);
             }
             
         }   
         }); 
     }
-    // const payload = ticket.getPayload();
-    // const mail = payload.email;
-    // const googleId = payload.sub;
-    // const name = payload.name;
-    // const sql = `SELECT * FROM account WHERE email=?`
-   
-   
 
     verify().catch(console.error);
     

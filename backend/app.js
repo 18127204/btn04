@@ -35,6 +35,7 @@ var importExcelRouter=require('./routes/ImportExcel');
 var profileRouter = require('./routes/Profile');
 var AuthorizationRouter=require('./routes/Authorization');
 var GoogleSigninRouter = require('./routes/GoogleSignIn')
+var FacebookSigninRouter = require('./routes/FacebookSignIn');
 var usersRouter = require('./routes/Eliminated/users');
 var app = express();
 
@@ -68,6 +69,7 @@ app.use('/importExcel',importExcelRouter);
 app.use('/profile',profileRouter);
 app.use('/idenRole',AuthorizationRouter);
 app.use('/google-sign-in',GoogleSigninRouter);
+app.use('/facebook-sign-in',FacebookSigninRouter);
 
 
 // catch 404 and forward to error handler
