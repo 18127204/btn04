@@ -17,7 +17,7 @@ passport.use(new LocalStrategy(
     function (req, username, password, done) {
         username = req.body.username;
         password = req.body.password;
-        let sqlAccount = 'select id,username from account where username=? and password =?';
+        let sqlAccount = 'select id,username,isadmin from account where username=? and password =?';
         pool.query(sqlAccount, [username,password], (error, result) => {
             if (error) {               
                 return done(null, false, { message: 'Incorrect username or password.' });
@@ -42,6 +42,6 @@ opts.secretOrKey = process.env.jwt_secret;
 passport.use(new JwtStrategy(opts, function (jwt_payload, done) {
     //return done(null, { id: jwt_payload.id, username: jwt_payload.username });//req.user
     console.log(jwt_payload)
-    return done(null, { id: jwt_payload.id, username: jwt_payload.username });//req.user
+    return done(null, { id: jwt_payload.id, username: jwt_payload.username,isadmin:jwt_payload.isadmin });//req.user
 }));
 module.exports = passport;

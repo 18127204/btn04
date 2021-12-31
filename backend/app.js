@@ -37,7 +37,9 @@ var AuthorizationRouter=require('./routes/Authorization');
 var GoogleSigninRouter = require('./routes/GoogleSignIn')
 var FacebookSigninRouter = require('./routes/FacebookSignIn');
 var usersRouter = require('./routes/Eliminated/users');
-var gradereview = require('./routes/GradeReview')
+var gradereview = require('./routes/GradeReview');
+var adminrouter = require('./routes/Admin');
+var userrouter =require('./routes/user')
 var app = express();
 
 // view engine setup
@@ -72,6 +74,9 @@ app.use('/idenRole',AuthorizationRouter);
 app.use('/google-sign-in',GoogleSigninRouter);
 app.use('/facebook-sign-in',FacebookSigninRouter);
 app.use('/gradeReview',gradereview);
+app.use('/admin',adminrouter);
+app.use('/user',userrouter);
+
 
 
 // catch 404 and forward to error handler
