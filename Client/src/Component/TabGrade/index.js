@@ -4,11 +4,14 @@ import UploadStudentList from '../UploadStudentList'
 import Axios from 'axios';
 import { INFO, TOKEN, INFCLASS, URL_API, URL_FRONTEND } from '../../SettingValue';
 import ShowInfoStudentHavingAccount from '../ShowInfoStudentHavingAccount';
+import ReactHTMLTableToExcel from 'react-html-table-to-excel';
+import ExportTotalGradeStudent from '../ExportTotalGradeStudent';
 const TabGrade = ({ role, link }) => {
     const [lstRowNameAss, setLstRowNameAss] = useState([]);
     const [lstGradeStudent, setLstGradeStudent] = useState([]);
     const [infoEditPoint, setInfoEditPoint] = useState('');
     const [lstHasAccount, setLstHasAccount] = useState([]);
+    const [lstGetTotalGrade, setLstGetTotalGrade] = useState([]);
     //Run 1st
     useEffect(() => {
         getListRowNameAssignment();
@@ -104,19 +107,18 @@ const TabGrade = ({ role, link }) => {
         setInfoEditPoint(`${name}:${value}`);
     }
 
-    const checkHavingAccount=(mssv,lstHasAccount)=>{
-        let indexFind=lstHasAccount.findIndex((item)=>{return item.mssv==mssv});
-        if(indexFind===-1){
+    const checkHavingAccount = (mssv, lstHasAccount) => {
+        let indexFind = lstHasAccount.findIndex((item) => { return item.mssv == mssv });
+        if (indexFind === -1) {
             return false;
         }
         return true;
     }
-    const getInfoStudent=(mssv,lstHasAccount)=>{
-        let indexFind=lstHasAccount.findIndex((item)=>{return item.mssv==mssv});
+    const getInfoStudent = (mssv, lstHasAccount) => {
+        let indexFind = lstHasAccount.findIndex((item) => { return item.mssv == mssv });
         return lstHasAccount[indexFind];
     }
     const displayTBody = (arrayGradeStu, lstStudentHaveAcc) => {
-        console.log('arrayGradeStu', arrayGradeStu);
         let result = [];
         if (arrayGradeStu.length && lstStudentHaveAcc.length) {
             for (let i = 0; i < arrayGradeStu.length; i++) {
@@ -124,15 +126,19 @@ const TabGrade = ({ role, link }) => {
                 let tdGrade = arrayGradeStu[i].lstAssAndGrade.map((item, index) => {
                     return (
                         <td key={`tdGrade${index}`}>
-                            <input type="text" className="form-control" name={`${arrayGradeStu[i].mssv}:${item.assignmentId}`}
-                                defaultValue={item.grade} onChange={handleChangeEditGrade} onBlur={handleUpdatePoint} />
+                            {(role==='teacher')?
+                            (<input type="text" className="form-control" name={`${arrayGradeStu[i].mssv}:${item.assignmentId}`}
+                                defaultValue={item.grade} onChange={handleChangeEditGrade} onBlur={handleUpdatePoint} />):
+                                (<input type="text" className="form-control" readOnly value={item.grade} />)
+                            }
+                            
                         </td>
                     );
                 });
 
                 temp.push(
                     <tr key={`trGrade${i}`}>
-                        {checkHavingAccount(arrayGradeStu[i].mssv,lstStudentHaveAcc)?(<td><ShowInfoStudentHavingAccount infoShow={getInfoStudent(arrayGradeStu[i].mssv,lstHasAccount)}/></td>):(<td>{arrayGradeStu[i].fullName}</td>)}       
+                        {checkHavingAccount(arrayGradeStu[i].mssv, lstStudentHaveAcc) ? (<td><ShowInfoStudentHavingAccount infoShow={getInfoStudent(arrayGradeStu[i].mssv, lstHasAccount)} /></td>) : (<td>{arrayGradeStu[i].fullName}</td>)}
                         {tdGrade}
                         <td>{handleTotalGrade(lstRowNameAss, arrayGradeStu[i].lstAssAndGrade)}</td>
                     </tr>
@@ -147,9 +153,13 @@ const TabGrade = ({ role, link }) => {
     return (
         <div id="Grade" className="container tab-pane fade container">
 
-            <UploadStudentList role={role} link={link} />
+            <div className='d-flex flex-row'>
+                <UploadStudentList role={role} link={link} />
+                <ExportTotalGradeStudent lstRowNameAss={lstRowNameAss} lstGradeStudent={lstGradeStudent} 
+                displayTRowNameAssignment={displayTRowNameAssignment} handleTotalGrade={handleTotalGrade} role={role}/>
+            </div>
 
-            <table className="table">
+            <table className="table" id='emp-table1'>
                 <thead>
                     <tr>
                         {displayTRowNameAssignment(lstRowNameAss)}
@@ -159,7 +169,6 @@ const TabGrade = ({ role, link }) => {
                     {displayTBody(lstGradeStudent, lstHasAccount)}
                 </tbody>
             </table>
-
         </div>
     )
 }

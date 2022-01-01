@@ -1,6 +1,6 @@
 import React from 'react';
 import { INFO, TOKEN, INFCLASS, URL_API, URL_FRONTEND } from '../../SettingValue';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import Axios from 'axios';
@@ -228,12 +228,17 @@ const ShowDetailClass = () => {
                                     {
                                         (role === 'teacher') ? (
                                             <div className='d-flex flex-row'>
-                                                <UpdateAssignment infoAss={bt} link={link}/>
-                                                <RemoveAssignment infoAss={bt}/>
+                                                <UpdateAssignment infoAss={bt} link={link} />
+                                                <RemoveAssignment infoAss={bt} />
                                                 <ExportAssignmentGrade infoAss={bt} fileName={fileNameAssignmentGrade} />
                                                 <UploadGradeAssignment infoAss={bt} />
+                                                <Link to={`/classroom/${link}/gradereview/${bt.id}`} state={{ infoAss: bt,role:role }} className="btn btn-secondary text-white mr-3">Grade review</Link>
                                             </div>
-                                        ) : ('')
+                                        ) : (
+                                            <div className='d-flex flex-row'>
+                                                <Link to={`/classroom/${link}/gradereview/${bt.id}`} state={{ infoAss: bt,role:role }} className="btn btn-secondary text-white mr-3">Grade review</Link>
+                                            </div>
+                                        )
                                     }
                                 </div>
 
@@ -339,8 +344,8 @@ const ShowDetailClass = () => {
 
                 <TabPeople role={role} lstStudents={lstStudents} lstTeachers={lstTeachers}
                     fileNameStudentList={fileNameStudentList} displayTeacherStudent={displayTeacherStudent} />
-                <TabGrade role={role} link={link}/>
-                
+                <TabGrade role={role} link={link} />
+
 
             </div>
             <InvitateTeacher invitedTeacher={handleInvitedTeacher} />

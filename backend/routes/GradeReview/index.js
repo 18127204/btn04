@@ -2,8 +2,6 @@ const express = require('express');
 const router = express.Router();
 var pool=require('../Pool');
 var passport=require('../../modules/passport');
-var jwt = require('jsonwebtoken');
-const { response } = require('../../app');
 router.get('/api/getAllComments/:link/:idassiment', function (req, res, next) {
     passport.authenticate("jwt", { session: false, }, function (err, user, info) {
         if (err) {
@@ -54,14 +52,22 @@ router.get('/api/getAllComments/:link/:idassiment', function (req, res, next) {
                             
                         }
                         else {
-                            let sqlchildren=`SELECT * FROM comment  WHERE comment.parentid=?`;
-                            pool.query(sqlchildren , [result1[0].id], (error, result2) => {
+                            let sqlchildren=`SELECT * FROM comment  WHERE parentid in
+                            (SELECT C.id
+                                from comment C INNER JOIN grade G on G.assignmentId=C.assignmentId
+                                   INNER JOIN assignment Ass ON Ass.id=G.assignmentId
+                                   INNER JOIN classes cl ON cl.id=Ass.classId
+                                   INNER JOIN classaccount cla ON (cla.classId=cl.id and C.accountId=cla.accountId)
+                                   INNER JOIN account A ON (A.mssv =G.mssv and A.id=cla.accountId)
+                                   WHERE cl.link=? and Ass.id=? and cla.accountId=? and C.parentid=?)
+                            `;
+                            pool.query(sqlchildren , [link,idass,user.id,0], (error, result2) => {
                                 if (error) {
                                     res.send(error);
                                 }
                                 else {
-                                    let final = result1.concat(result2);
-                                    res.json(final);
+                                    let finalResult = result1.concat(result2);
+                                    res.json(finalResult);
                                     
                                 }
                                 });
@@ -74,6 +80,7 @@ router.get('/api/getAllComments/:link/:idassiment', function (req, res, next) {
     }
     )(req, res, next);
 });
+
 router.post('/api/addComment', function (req, res, next) {
     passport.authenticate("jwt", { session: false, }, function (err, user, info) {
         if (err) {
@@ -100,12 +107,6 @@ router.post('/api/addComment', function (req, res, next) {
     }
     )(req, res, next);
 });
-
-/* /api/addComment
- dataSend:{comment:'abcd',parentId:'12',createat:'2021-08-17T23:00:33.010+02:00',assignmentId:'333',finalgrade:'-1'}
-/gradeReview/api/addFinalDecision
-*/
-
 
 router.post('/api/addFinalDecision', function (req, res, next) {
     passport.authenticate("jwt", { session: false, }, function (err, user, info) {

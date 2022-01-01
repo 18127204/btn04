@@ -14,9 +14,9 @@ router.post('/api/createadmin', function (req, res, next) {
             return;
         }
         if (user.isadmin ==1) {
-            const {username,password,email,name,phone}=req.body
-            const sqlinsert =`INSERT INTO account (username,password,email,name,phone,lockacc,isadmin) values(?,?,?,?,?,?,?)`
-            pool.query(sqlinsert,[username,password, email,name,phone,0,1],(error, result) => {
+            const {username,password,email,name,phone,createat}=req.body
+            const sqlinsert =`INSERT INTO account (username,password,email,name,phone,lockacc,isadmin,createat) values(?,?,?,?,?,?,?,?)`
+            pool.query(sqlinsert,[username,password, email,name,phone,0,1,createat],(error, result) => {
                 if (error){
                     res.json({message:'insert fail'});
                 } 
@@ -51,8 +51,9 @@ router.get('/api/viewadminlist', function (req, res, next) {
             return;
         }
         if (user.isadmin ==1) {
-            const sqladmin =`SELECT id,username,email,name,phone FROM account WHERE isadmin=1`;
+            const sqladmin =`SELECT id,username,email,name,phone,createat FROM account WHERE isadmin=1`;
             pool.query(sqladmin,[],(error, result) => {
+                
                 if (error){
                     res.json({message:'get fail'});
                 } 

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FaUser, FaLock, FaGooglePlusG } from "react-icons/fa";
 import './index.css';
 import Axios from 'axios';
-import { URL_API, INFO, TOKEN } from '../../SettingValue';
+import { URL_API, INFO, TOKEN,ISADMIN } from '../../SettingValue';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import GoogleLogin from 'react-google-login';
@@ -29,11 +29,16 @@ const Login = () => {
         });
 
         promise.then((result) => {
-
-            console.log('kq tra ve sau login', result);
-            localStorage.setItem(INFO, JSON.stringify(result.data.content));
+            localStorage.setItem(INFO, JSON.stringify({ id: result.data.content.id, username: result.data.content.username }));
             localStorage.setItem(TOKEN, result.data.tokenAccess);
-            navigate("/classroom");
+            if (result.data.content.isadmin == 1) {
+                localStorage.setItem(ISADMIN,result.data.content.isadmin);
+                navigate("/pageAdmin");
+            }
+            else {
+                navigate("/classroom");
+            }
+
         })
         promise.catch((err) => {
             alert('Login again');
@@ -44,6 +49,7 @@ const Login = () => {
     const handleRegister = () => {
         navigate("/register");
     }
+
     const responseGoogle = (response) => {
         console.log("quang");
         console.log(response);
@@ -53,7 +59,6 @@ const Login = () => {
             data: { tokenId: response.tokenId }
         });
         promise.then((result) => {
-            console.log('kq tra ve sau login', result);
             localStorage.setItem(INFO, JSON.stringify(result.data.content));
             localStorage.setItem(TOKEN, result.data.tokenAccess);
             navigate("/classroom");
@@ -63,6 +68,10 @@ const Login = () => {
             alert('Login again qunag');
             console.log('Error login: ', err);
         });
+    }
+    const responseErrorGoogle = (response) => {
+        console.log("tan");
+
     }
     const responseFacebook = (response) => {
         console.log(response);
@@ -82,10 +91,6 @@ const Login = () => {
             alert('Login again qunag');
             console.log('Error login: ', err);
         });
-    }
-    const responseErrorGoogle = (response) => {
-        console.log("tan");
-
     }
     return (
         <div className="container">
@@ -122,6 +127,7 @@ const Login = () => {
                                 cookiePolicy='single_host_origin'
                             />
                         </div>
+
                         <div className="d-flex justify-content-center align-items-center">
                             <FacebookLogin
                                 appId="3092075754367248"
@@ -130,8 +136,10 @@ const Login = () => {
                                 textButton='Sign in with facebook'
                                 callback={responseFacebook} />
                         </div>
+
                         <span >
                             <p className="text-center">Don't have an account? <Link to="/register"> SignUp</Link></p>
+                            <p className="text-center">Did you forget password? <Link to="/forgotpassword"> Click here</Link></p>
                         </span>
 
                     </div>

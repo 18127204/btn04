@@ -9,9 +9,8 @@ router.post('/',passport.authenticate('local',{session:false}),(req, res, next)=
         content:req.user,
         tokenAccess:jwt.sign({
             id:req.user.id,
-            isadmin:req.user.isadmin,
             username:req.user.username,
-          
+            isadmin:req.user.isadmin
         },
         process.env.jwt_secret,
         { expiresIn:'1h'})

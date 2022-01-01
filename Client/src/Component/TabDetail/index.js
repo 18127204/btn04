@@ -10,6 +10,7 @@ const TabDetail = ({infoClass,infoGradeStructure,displayInfoGradeStructure}) => 
                 <h3>Content: {infoClass.description}</h3>
                 <h3>Room:{infoClass.room}</h3>
                 <h3>Link: {URL_FRONTEND + '/classroom/' + infoClass.link}</h3>
+                <h3>Code: {infoClass.coderoom}</h3>
             </div>
 
             <div className='col-md-12'>

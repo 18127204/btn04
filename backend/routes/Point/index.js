@@ -16,83 +16,159 @@ router.get('/api/GetStudentsWithPoint/:link', function (req, res, next) {
             return;
         }
         let link = req.params.link;
-        let resultSqlAccount;
-        let numberStudent;
-        let resultAss;
-        let sqlaccount = `SELECT S.fullName,G.grade,G.mssv,G.assignmentId FROM grade G INNER JOIN assignment Ass ON G.assignmentId=Ass.id
-                        INNER JOIN student S on S.mssv=G.mssv 
-                        INNER JOIN account A ON A.mssv=G.mssv 
-                        INNER JOIN classes CL ON CL.id=Ass.classId WHERE CL.link=?
-                        UNION
-                        SELECT S.fullName , G.grade, G.mssv, G.assignmentId  FROM grade G
-                        INNER JOIN student S ON G.mssv = S.mssv WHERE G.mssv not in ( SELECT G1.mssv  FROM assignment Ass  
-                        INNER JOIN grade G1 ON Ass.id = G1.assignmentId 
-                        INNER JOIN account C ON C.mssv = G1.mssv 
-                        INNER JOIN classes CL ON CL.id=Ass.classId
-                        WHERE CL.link =? )`;
-        pool.query(sqlaccount, [link, link], (error, result) => {
+        const sqlRole = `SELECT CA.role FROM classes C INNER JOIN classaccount CA ON C.id=CA.classId INNER JOIN account A
+        ON A.id=CA.accountId  WHERE C.link=? and CA.accountId=?`;
+        pool.query(sqlRole, [link, user.id], (error, resultRole) => {
             if (error) {
                 res.send(error);
             }
-            resultSqlAccount = result;
+            else {
+                if (resultRole[0].role === 'teacher') {
+                    let resultSqlAccount;
+                    let numberStudent;
+                    let resultAss;
 
-            let sqlGetNumberStudent = `SELECT COUNT(ST.mssv) as SL FROM classes CL INNER JOIN student ST 
-            ON CL.id=ST.classId WHERE CL.link=?`; /// bao nhieu thang hoc lop cung link
-            pool.query(sqlGetNumberStudent, [link], (error, result) => {
-                if (error) {
-                    res.send(error);
+                    let sqlaccount = `SELECT S.fullName,G.grade,G.mssv,G.assignmentId FROM grade G INNER JOIN assignment Ass ON G.assignmentId=Ass.id
+                                    INNER JOIN student S on S.mssv=G.mssv 
+                                    INNER JOIN account A ON A.mssv=G.mssv 
+                                    INNER JOIN classes CL ON CL.id=Ass.classId WHERE CL.link=?
+                                    UNION
+                                    SELECT S.fullName , G.grade, G.mssv, G.assignmentId  FROM grade G
+                                    INNER JOIN student S ON G.mssv = S.mssv WHERE G.mssv not in ( SELECT G1.mssv  FROM assignment Ass  
+                                    INNER JOIN grade G1 ON Ass.id = G1.assignmentId 
+                                    INNER JOIN account C ON C.mssv = G1.mssv 
+                                    INNER JOIN classes CL ON CL.id=Ass.classId
+                                    WHERE CL.link =? )`;
+                    pool.query(sqlaccount, [link, link], (error, result) => {
+                        if (error) {
+                            res.send(error);
+                        }
+                        resultSqlAccount = result;
+
+                        let sqlGetNumberStudent = `SELECT COUNT(ST.mssv) as SL FROM classes CL INNER JOIN student ST 
+                        ON CL.id=ST.classId WHERE CL.link=?`; /// bao nhieu thang hoc lop cung link
+                        pool.query(sqlGetNumberStudent, [link], (error, result) => {
+                            if (error) {
+                                res.send(error);
+                            }
+                            numberStudent = result[0].SL; /// so luong cua result
+                            let sqlGetAllAss = `SELECT ass.id FROM classaccount cla INNER JOIN classes c ON cla.classId=c.id INNER JOIN assignment ass
+                            ON c.id=ass.classId WHERE c.link=? and cla.accountId=? ORDER BY ASS.rank ASC`;
+                            //lay all assignmen trong link
+                            pool.query(sqlGetAllAss, [link, user.id], (error, result1) => {
+                                if (error) {
+                                    res.send(error);
+                                }
+                                resultAss = result1;
+                                let templateGrade = resultAss.map((item, index) => { return { assignmentId: item.id, grade: 0 } });
+                                // res.json(resultSqlAccount);
+                                let indexFirst = 0;
+                                let indexLast = 0;
+                                let resultReturn = [];
+                                for (let i = 0; i < Number(numberStudent); i++) {
+                                    let temp = {
+                                        mssv: resultSqlAccount[indexFirst].mssv,
+                                        fullName: resultSqlAccount[indexFirst].fullName,
+                                        lstAssAndGrade: []
+                                    }
+                                    let tempLstGrade = templateGrade.map((item) => {
+                                        return { ...item };
+                                    })
+
+                                    let indexAssId = tempLstGrade.findIndex(item => item.assignmentId == resultSqlAccount[indexFirst].assignmentId);
+                                    tempLstGrade[indexAssId].grade = resultSqlAccount[indexFirst].grade;
+
+                                    for (let j = indexFirst + 1; j < resultSqlAccount.length; j++) {
+                                        if (resultSqlAccount[indexFirst].mssv == resultSqlAccount[j].mssv) {
+                                            let indexAssiId = tempLstGrade.findIndex(item => item.assignmentId == resultSqlAccount[j].assignmentId);
+                                            tempLstGrade[indexAssiId].grade = resultSqlAccount[j].grade;
+                                            indexLast = j;
+                                        }
+                                        else {
+                                            temp.lstAssAndGrade = [...tempLstGrade];
+                                            resultReturn.push(temp);
+                                            indexFirst = j;
+                                            indexLast = j;
+                                            break;
+                                        }
+                                    }
+                                    if (indexLast + 1 == resultSqlAccount.length) {
+                                        temp.lstAssAndGrade = [...tempLstGrade];
+                                        resultReturn.push(temp);
+                                    }
+                                }
+                                res.json(resultReturn);
+
+                            });
+                        });
+                    });
                 }
-                numberStudent = result[0].SL; /// so luong cua result
-                let sqlGetAllAss = `SELECT ass.id FROM classaccount cla INNER JOIN classes c ON cla.classId=c.id INNER JOIN assignment ass
-                ON c.id=ass.classId WHERE c.link=? and cla.accountId=? ORDER BY ASS.rank ASC`;
-                //lay all assignmen trong link
-                pool.query(sqlGetAllAss, [link, user.id], (error, result1) => {
-                    if (error) {
-                        res.send(error);
-                    }
-                    resultAss = result1;
-                    let templateGrade = resultAss.map((item, index) => { return { assignmentId: item.id, grade: 0 } });
-                    // res.json(resultSqlAccount);
-                    let indexFirst = 0;
-                    let indexLast = 0;
-                    let resultReturn = [];
-                    for (let i = 0; i < Number(numberStudent); i++) {
-                        let temp = {
-                            mssv: resultSqlAccount[indexFirst].mssv,
-                            fullName: resultSqlAccount[indexFirst].fullName,
-                            lstAssAndGrade: []
+                else if (resultRole[0].role === 'student') {
+                    let resultSqlAccount;
+                    let resultAss;
+
+                    let sqlaccount = `SELECT S.fullName,G.grade,G.mssv,G.assignmentId FROM grade G INNER JOIN assignment Ass ON G.assignmentId=Ass.id
+                                    INNER JOIN student S on S.mssv=G.mssv 
+                                    INNER JOIN account A ON A.mssv=G.mssv 
+                                    INNER JOIN classes CL ON CL.id=Ass.classId WHERE CL.link=? and A.id=?`;
+                    pool.query(sqlaccount, [link, user.id], (error, result) => {
+                        if (error) {
+                            res.send(error);
                         }
-                        let tempLstGrade = templateGrade.map((item) => {
-                            return { ...item };
-                        })
-
-                        let indexAssId = tempLstGrade.findIndex(item => item.assignmentId == resultSqlAccount[indexFirst].assignmentId);
-                        tempLstGrade[indexAssId].grade = resultSqlAccount[indexFirst].grade;
-
-                        for (let j = indexFirst + 1; j < resultSqlAccount.length; j++) {
-                            if (resultSqlAccount[indexFirst].mssv == resultSqlAccount[j].mssv) {
-                                let indexAssiId = tempLstGrade.findIndex(item => item.assignmentId == resultSqlAccount[j].assignmentId);
-                                tempLstGrade[indexAssiId].grade = resultSqlAccount[j].grade;
-                                indexLast=j;
+                        resultSqlAccount = result;
+                        let sqlGetAllAss = `SELECT ass.id FROM classaccount cla INNER JOIN classes c ON cla.classId=c.id INNER JOIN assignment ass
+                        ON c.id=ass.classId WHERE c.link=? and cla.accountId=? ORDER BY ASS.rank ASC`;
+                        //lay all assignmen trong link
+                        pool.query(sqlGetAllAss, [link, user.id], (error, result1) => {
+                            if (error) {
+                                res.send(error);
                             }
-                            else{
-                                temp.lstAssAndGrade=[...tempLstGrade];
+                            resultAss = result1;
+                            let templateGrade = resultAss.map((item) => { return { assignmentId: item.id, grade: 0 } });
+                            let indexFirst = 0;
+                            let indexLast = 0;
+                            let resultReturn = [];
+                            let temp = {
+                                mssv: resultSqlAccount[indexFirst].mssv,
+                                fullName: resultSqlAccount[indexFirst].fullName,
+                                lstAssAndGrade: []
+                            }
+                            let tempLstGrade = templateGrade.map((item) => {
+                                return { ...item };
+                            })
+
+                            let indexAssId = tempLstGrade.findIndex(item => item.assignmentId == resultSqlAccount[indexFirst].assignmentId);
+                            tempLstGrade[indexAssId].grade = resultSqlAccount[indexFirst].grade;
+
+                            for (let j = indexFirst + 1; j < resultSqlAccount.length; j++) {
+                                if (resultSqlAccount[indexFirst].mssv == resultSqlAccount[j].mssv) {
+                                    let indexAssiId = tempLstGrade.findIndex(item => item.assignmentId == resultSqlAccount[j].assignmentId);
+                                    tempLstGrade[indexAssiId].grade = resultSqlAccount[j].grade;
+                                    indexLast = j;
+                                }
+                                else {
+                                    temp.lstAssAndGrade = [...tempLstGrade];
+                                    resultReturn.push(temp);
+                                    indexFirst = j;
+                                    indexLast = j;
+                                    break;
+                                }
+                            }
+                            if (indexLast + 1 == resultSqlAccount.length) {
+                                temp.lstAssAndGrade = [...tempLstGrade];
                                 resultReturn.push(temp);
-                                indexFirst=j;
-                                indexLast=j;
-                                break;
                             }
-                        }
-                        if(indexLast+1==resultSqlAccount.length){
-                            temp.lstAssAndGrade=[...tempLstGrade];
-                            resultReturn.push(temp);
-                        }
-                    }
-                    res.json(resultReturn);
+                            res.json(resultReturn);
 
-                });
-            });
+                        });
+
+                    });
+                }
+
+            }
         });
+
+
     }
     )(req, res, next);
 
@@ -188,7 +264,7 @@ router.put('/api/UpdatePointAssigmentStudent/:link', function (req, res, next) {
             else {
                 if (result[0].role === "teacher") {
                     let sqlUpdate = `INSERT INTO grade (mssv,grade,assignmentId,classId) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE grade=?`;
-                    pool.query(sqlUpdate, [arrayInfo[0], arrayInfo[2], arrayInfo[1],result[0].classId, arrayInfo[2]], (error, result) => {
+                    pool.query(sqlUpdate, [arrayInfo[0], arrayInfo[2], arrayInfo[1], result[0].classId, arrayInfo[2]], (error, result) => {
                         if (error) {
                             res.send(error);
                         }

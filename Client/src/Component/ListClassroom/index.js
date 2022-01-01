@@ -31,7 +31,8 @@ const ClassRoom = () => {
         let tempClass = [...listClassroom];
         let getRandlink = new Date();
         let link = getRandlink.getTime() + '';
-        dataSend = { ...dataSend, link };
+        let coderoom=(Math.random() + 1).toString(36).substring(2);
+        dataSend = { ...dataSend, link,coderoom,createat:new Date().toISOString() };
         tempClass.push(dataSend);
         // console.log('add new class111:',tempClass);
         let promise = Axios({
@@ -41,9 +42,9 @@ const ClassRoom = () => {
             headers: { 'Authorization': 'Bearer ' + localStorage.getItem(TOKEN) }
         });
         promise.then((res) => {
-            console.log('add new class ', tempClass);
+            // console.log('add new class ', tempClass);
             setListClassroom(tempClass);
-            console.log('Create Class success', dataSend);
+            // console.log('Create Class success', dataSend);
         });
         promise.catch((error) => {
             console.log('Create Class success fail', error);
@@ -74,7 +75,7 @@ const ClassRoom = () => {
 
 
     const displayListClass = (lst) => {
-        console.log('Length: ', lst.length);
+
         if (lst.length) {
             return lst.map((cl, index) => {
                 return (

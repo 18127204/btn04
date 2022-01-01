@@ -28,7 +28,7 @@ const JoinClass = ({joinClass }) => {
                         <form>
                             <div className="modal-body">
                                 <div className="form-group">
-                                    <p>Enter Link</p>
+                                    <p>Enter Link or code</p>
                                     <input type="text" className="form-control" name="link" onChange={handleChange} required />
                                 </div>
                             </div>

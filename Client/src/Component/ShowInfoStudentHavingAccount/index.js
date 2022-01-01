@@ -17,19 +17,19 @@ const ShowInfoStudentHavingAccount = ({infoShow}) => {
                             <div className="modal-body">
                                 <div className="form-group">
                                     <p>Full Name</p>
-                                    <input type="text" className="form-control" value={infoShow.fullName}/>
+                                    <input type="text" className="form-control" readOnly value={infoShow.fullName} />
                                 </div>
                                 <div className="form-group">
                                     <p>Student Id</p>
-                                    <input type="text" className="form-control" value={infoShow.mssv}/>
+                                    <input type="text" className="form-control" readOnly value={infoShow.mssv}/>
                                 </div>
                                 <div className="form-group">
                                     <p>Email</p>
-                                    <input type="text" className="form-control" value={infoShow.email}/>
+                                    <input type="text" className="form-control" readOnly value={infoShow.email}/>
                                 </div>
                                 <div className="form-group">
                                     <p>Phone number</p>
-                                    <input type="text" className="form-control" value={infoShow.phone}/>
+                                    <input type="text" className="form-control" readOnly value={infoShow.phone}/>
                                 </div>
                             </div>
                             <div className="modal-footer">

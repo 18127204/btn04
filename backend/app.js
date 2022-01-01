@@ -9,19 +9,6 @@ var passport = require('./modules/passport');
 var nodemailer = require('nodemailer');
 
 //init router
-// var indexRouter = require('./routes/index');
-// var usersRouter = require('./routes/users');
-// var classRoomRouter = require('./routes/classroom');
-// var loginRouter = require('./modules/passport/loginRouter');
-// var registerRouter = require('./routes/register');
-// var sendEmailRouter = require('./routes/sendemail');
-// var assignmentRouter = require('./routes/Assignment');
-// var pointRouter = require('./routes/Point');
-// var excelRouter = require('./routes/Fileexcel');
-// var importExcelRouter=require('./routes/ImportExcel');
-// var profileRouter = require('./routes/Profile');
-// var AuthorizationRouter=require('./routes/Authorization');
-// var GoogleSigninRouter = require('./routes/GoogleSignIn')
 
 var indexRouter = require('./routes/index');
 var classRoomRouter = require('./routes/Classroom');
@@ -34,12 +21,13 @@ var excelRouter = require('./routes/FileExcel');
 var importExcelRouter=require('./routes/ImportExcel');
 var profileRouter = require('./routes/Profile');
 var AuthorizationRouter=require('./routes/Authorization');
-var GoogleSigninRouter = require('./routes/GoogleSignIn')
+var GoogleSigninRouter = require('./routes/GoogleSignIn');
 var FacebookSigninRouter = require('./routes/FacebookSignIn');
 var usersRouter = require('./routes/Eliminated/users');
-var gradereview = require('./routes/GradeReview');
-var adminrouter = require('./routes/Admin');
-var userrouter =require('./routes/user')
+var gradeReviewRouter=require('./routes/GradeReview');
+var forgotPasswordRouter=require('./routes/ForgotPassword');
+var adminRouter = require('./routes/Admin');
+var userRouter =require('./routes/user')
 var app = express();
 
 // view engine setup
@@ -73,10 +61,10 @@ app.use('/profile',profileRouter);
 app.use('/idenRole',AuthorizationRouter);
 app.use('/google-sign-in',GoogleSigninRouter);
 app.use('/facebook-sign-in',FacebookSigninRouter);
-app.use('/gradeReview',gradereview);
-app.use('/admin',adminrouter);
-app.use('/user',userrouter);
-
+app.use('/gradeReview',gradeReviewRouter);
+app.use('/forgotPassword',forgotPasswordRouter);
+app.use('/admin',adminRouter);
+app.use('/user',userRouter);
 
 
 // catch 404 and forward to error handler

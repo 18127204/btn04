@@ -20,12 +20,12 @@ router.post('/api/CreateClass', function (req, res, next) {
         //jwt id user user={id:'1',username:'tanthai'}
         //write code:
         //input:{na}
-        let {name, description, room} =req.body;
-        let link=new Date();
-        let newLink=link.getTime();
-        const sqlCreateClass = 'insert into classes (name,description,room,link,creatorId) values(?,?,?,?,?)'
+        let {name, description, room,link,coderoom} =req.body;
+        // let link=new Date();
+        // let newLink=link.getTime();
+        const sqlCreateClass = 'insert into classes (name,description,room,link,coderoom,creatorId) values(?,?,?,?,?,?)'
 
-        pool.query(sqlCreateClass, [name, description, room, newLink,user.id ], (error, result) => {
+        pool.query(sqlCreateClass, [name, description, room, link,coderoom,user.id ], (error, result) => {
             if (error) {
                 res.send(error);
             }
@@ -63,7 +63,7 @@ router.get('/api/GetListClasses', function (req, res, next) {
         }
         //jwt id user user={id:'1',username:'tanthai'}
         //write code:
-        const sql = `SELECT name, description,room, link FROM classes INNER JOIN classaccount ON classID=id
+        const sql = `SELECT name, description,room, link,coderoom FROM classes INNER JOIN classaccount ON classID=id
         WHERE accountId=?
         `
         pool.query(sql, [user.id], (error, result) => {
@@ -93,7 +93,7 @@ router.get('/api/ShowDetailClass/:link', function (req, res, next) {
         //jwt id user user={id:'1',username:'tanthai'}
         //write code:
         const link = req.params.link;
-        const sql = `SELECT name, description,room,link  FROM classes WHERE link =?`
+        const sql = `SELECT name, description,room,link,coderoom  FROM classes WHERE link =?`
         
         pool.query(sql, [link], (error, result) => {
             if (error) {
@@ -190,9 +190,9 @@ router.post('/api/joinClassByLink', function (req, res, next) {
         const parseLink = link.split('/');
         const classLink = parseLink[parseLink.length - 1];
 
-        const sqlLink =`SELECT * FROM classes WHERE link =?`
+        const sqlLink =`SELECT * FROM classes WHERE link =? or coderoom=?`
         
-        pool.query(sqlLink, [classLink], (error, result) => {
+        pool.query(sqlLink, [classLink,classLink], (error, result) => {
             if (error) {
                 res.send(error);
             }
@@ -222,6 +222,43 @@ router.post('/api/joinClassByLink', function (req, res, next) {
     }
     )(req, res, next);
 
+});
+
+
+
+/*Get total classes */
+router.get('/api/GetTotalClasses', function (req, res, next) {
+    passport.authenticate("jwt", { session: false, }, function (err, user, info) {
+        if (err) {
+            return next(err);
+        }
+        if (!user) {
+            res.header({ "Access-Control-Allow-Origin": "*" });
+            res.status(401);
+            res.send({ message: info.message, success: false });
+            return;
+        }
+        if (user.isadmin ==1) {
+            const sqladmin =`SELECT id,name,description,room,link,coderoom,createat from classes`;
+            pool.query(sqladmin,[],(error, result) => {
+                if (error){
+                    res.json({message:'get fail'});
+                } 
+                else{
+                   res.json(result);
+                }
+       
+               }
+               
+              );
+
+        }
+        else {
+            res.json({message:"must not view right"});
+        }
+        
+    }
+    )(req, res, next);
 });
 
 module.exports = router;
