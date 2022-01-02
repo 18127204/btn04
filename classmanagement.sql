@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th1 01, 2022 lúc 06:17 PM
+-- Thời gian đã tạo: Th1 02, 2022 lúc 11:05 AM
 -- Phiên bản máy phục vụ: 10.4.21-MariaDB
 -- Phiên bản PHP: 8.0.12
 
@@ -129,7 +129,8 @@ INSERT INTO `classaccount` (`accountId`, `classId`, `role`) VALUES
 (8, 1, 'teacher'),
 (8, 4, 'student'),
 (8, 6, 'student'),
-(8, 14, 'teacher');
+(8, 14, 'teacher'),
+(9, 1, 'student');
 
 -- --------------------------------------------------------
 
@@ -220,28 +221,30 @@ CREATE TABLE `grade` (
   `mssv` varchar(100) NOT NULL,
   `grade` float NOT NULL,
   `assignmentId` int(11) NOT NULL,
-  `classId` int(11) NOT NULL
+  `classId` int(11) NOT NULL,
+  `ismark` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Đang đổ dữ liệu cho bảng `grade`
 --
 
-INSERT INTO `grade` (`mssv`, `grade`, `assignmentId`, `classId`) VALUES
-('18127111', 9, 4, 1),
-('18127111', 9, 8, 1),
-('18127166', 10, 1, 1),
-('18127166', 10, 4, 1),
-('18127166', 8, 8, 1),
-('18127167', 10, 1, 1),
-('18127167', 1, 4, 1),
-('18127167', 7, 8, 1),
-('18127172', 10, 4, 1),
-('18127172', 9, 8, 1),
-('18127998', 1, 4, 1),
-('18127998', 6, 8, 1),
-('18127999', 1, 4, 1),
-('18127999', 6, 8, 1);
+INSERT INTO `grade` (`mssv`, `grade`, `assignmentId`, `classId`, `ismark`) VALUES
+('18127111', 9, 4, 1, 'false'),
+('18127111', 9, 8, 1, 'true'),
+('18127166', 10, 1, 1, 'false'),
+('18127166', 10, 4, 1, 'false'),
+('18127166', 8, 8, 1, 'false'),
+('18127167', 10, 1, 1, 'true'),
+('18127167', 1, 4, 1, 'false'),
+('18127167', 7, 8, 1, 'true'),
+('18127172', 10, 2, 1, 'false'),
+('18127172', 10, 4, 1, 'false'),
+('18127172', 9, 8, 1, 'true'),
+('18127998', 1, 4, 1, 'false'),
+('18127998', 6, 8, 1, 'false'),
+('18127999', 1, 4, 1, 'false'),
+('18127999', 6, 8, 1, 'false');
 
 -- --------------------------------------------------------
 

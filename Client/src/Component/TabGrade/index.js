@@ -94,12 +94,25 @@ const TabGrade = ({ role, link }) => {
         }
     }
 
-    const handleTotalGrade = (lstRowNameAss, lstAssAndGrade) => {
+    const handleTotalGrade = (lstRowNameAss, lstAssAndGrade, role) => {
         let sum = 0;
         for (let i = 0; i < lstRowNameAss.length; i++) {
             sum = sum + Number(lstAssAndGrade[i].grade) * (Number(lstRowNameAss[i].grade) / 10);
         }
-        return sum.toFixed(2);
+
+        if (role === 'teacher') {
+            return (<td>{sum.toFixed(2)}</td>)
+        }
+        else {
+            for (let i = 0; i < lstRowNameAss.length; i++) {
+                if (lstAssAndGrade[i].ismark === 'false') {
+                    return (<td>{''}</td>)
+                }
+            }
+            return (<td>{sum.toFixed(2)}</td>)
+
+        }
+
     }
 
     const handleChangeEditGrade = (e) => {
@@ -118,6 +131,22 @@ const TabGrade = ({ role, link }) => {
         let indexFind = lstHasAccount.findIndex((item) => { return item.mssv == mssv });
         return lstHasAccount[indexFind];
     }
+
+    const handleMarkGradeComposition = (item, studentId, newIsMark) => {
+        let promise = Axios({
+            method: 'POST',
+            url: `${URL_API}/point/api/markFinalGradeComposition/${link}`,
+            data: { ismark: newIsMark.toString(), mssv: studentId, assignmentId: item.assignmentId },
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem(TOKEN) }
+        });
+        promise.then((res) => {
+            console.log('handleMarkGradeComposition', res.data.message);
+        });
+        promise.catch((error) => {
+            console.log('handleMarkGradeComposition failed', error);
+        });
+    }
+
     const displayTBody = (arrayGradeStu, lstStudentHaveAcc) => {
         let result = [];
         if (arrayGradeStu.length && lstStudentHaveAcc.length) {
@@ -126,12 +155,17 @@ const TabGrade = ({ role, link }) => {
                 let tdGrade = arrayGradeStu[i].lstAssAndGrade.map((item, index) => {
                     return (
                         <td key={`tdGrade${index}`}>
-                            {(role==='teacher')?
-                            (<input type="text" className="form-control" name={`${arrayGradeStu[i].mssv}:${item.assignmentId}`}
-                                defaultValue={item.grade} onChange={handleChangeEditGrade} onBlur={handleUpdatePoint} />):
-                                (<input type="text" className="form-control" readOnly value={item.grade} />)
+                            {(role === 'teacher') ?
+                                (<div className='d-flex flex-row'>
+                                    <input type="text" className="form-control" name={`${arrayGradeStu[i].mssv}:${item.assignmentId}`}
+                                        defaultValue={item.grade} onChange={handleChangeEditGrade} onBlur={handleUpdatePoint} />
+                                    <input key={`tismark${index}`} type="checkbox" defaultChecked={item.ismark === 'true' ? true : false}
+                                        onChange={() => { handleMarkGradeComposition(item, arrayGradeStu[i].mssv, !(item.ismark === 'true' ? true : false)) }} />
+                                </div>) :
+
+                                (<input type="text" className="form-control" readOnly value={item.ismark === 'true' ? (item.grade) : ('')} />)
                             }
-                            
+
                         </td>
                     );
                 });
@@ -140,7 +174,8 @@ const TabGrade = ({ role, link }) => {
                     <tr key={`trGrade${i}`}>
                         {checkHavingAccount(arrayGradeStu[i].mssv, lstStudentHaveAcc) ? (<td><ShowInfoStudentHavingAccount infoShow={getInfoStudent(arrayGradeStu[i].mssv, lstHasAccount)} /></td>) : (<td>{arrayGradeStu[i].fullName}</td>)}
                         {tdGrade}
-                        <td>{handleTotalGrade(lstRowNameAss, arrayGradeStu[i].lstAssAndGrade)}</td>
+                        {/* <td>{handleTotalGrade(lstRowNameAss, arrayGradeStu[i].lstAssAndGrade)}</td> */}
+                        {handleTotalGrade(lstRowNameAss,arrayGradeStu[i].lstAssAndGrade,role)}
                     </tr>
                 )
                 result.push(temp);
@@ -155,8 +190,8 @@ const TabGrade = ({ role, link }) => {
 
             <div className='d-flex flex-row'>
                 <UploadStudentList role={role} link={link} />
-                <ExportTotalGradeStudent lstRowNameAss={lstRowNameAss} lstGradeStudent={lstGradeStudent} 
-                displayTRowNameAssignment={displayTRowNameAssignment} handleTotalGrade={handleTotalGrade} role={role}/>
+                <ExportTotalGradeStudent lstRowNameAss={lstRowNameAss} lstGradeStudent={lstGradeStudent}
+                    displayTRowNameAssignment={displayTRowNameAssignment} handleTotalGrade={handleTotalGrade} role={role} />
             </div>
 
             <table className="table" id='emp-table1'>

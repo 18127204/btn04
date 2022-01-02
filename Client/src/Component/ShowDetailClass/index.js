@@ -4,6 +4,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import Axios from 'axios';
+import { Navigate } from 'react-router-dom';
 import HeaderClassRoom from '../HeaderClassRoom';
 import InvitateTeacher from '../Invitation/InvitateTeacher';
 import InvitateStudent from '../Invitation/InvitateStudent';
@@ -15,6 +16,7 @@ import UploadGradeAssignment from '../UploadGradeAssignment';
 import TabGrade from '../TabGrade';
 import UpdateAssignment from '../UpdateAssignment';
 import RemoveAssignment from '../RemoveAssignment';
+
 const ShowDetailClass = () => {
     const { link } = useParams();
     const [infoClass, setInfoClass] = useState([]);
@@ -313,44 +315,51 @@ const ShowDetailClass = () => {
 
     }
 
-    return (
-        <div>
-            <HeaderClassRoom />
 
-            {/* Tab panes */}
-            <div className="tab-content">
-
-                <TabDetail infoClass={infoClass} infoGradeStructure={infoGradeStructure}
-                    displayInfoGradeStructure={displayInfoGradeStructure} />
-
-                <div id="Assignment" className="container tab-pane fade container">
-                    <div className='row'>
-                        <div>
-                            {(role === 'teacher') ? (<button className='btn btn-success' data-toggle="modal" data-target="#modelAddAssignment" >Add assignment</button>) : ('')}
-                            < CreateAssignment addass={handleAddAssignment} />
+    if (localStorage.getItem(TOKEN)) {
+        return (
+            <div>
+                <HeaderClassRoom />
+    
+                {/* Tab panes */}
+                <div className="tab-content">
+    
+                    <TabDetail infoClass={infoClass} infoGradeStructure={infoGradeStructure}
+                        displayInfoGradeStructure={displayInfoGradeStructure} />
+    
+                    <div id="Assignment" className="container tab-pane fade container">
+                        <div className='row'>
+                            <div>
+                                {(role === 'teacher') ? (<button className='btn btn-success' data-toggle="modal" data-target="#modelAddAssignment" >Add assignment</button>) : ('')}
+                                < CreateAssignment addass={handleAddAssignment} />
+                            </div>
+                            <DragDropContext onDragEnd={onDragEnd}>
+                                <Droppable droppableId='dp1'>
+                                    {(provided) => (
+                                        <div ref={provided.innerRef} {...provided.droppableProps}>
+                                            {handleDisplayAssignment(lstAsments)}
+                                            {provided.placeholder}
+                                        </div>
+                                    )}
+                                </Droppable>
+                            </DragDropContext>
                         </div>
-                        <DragDropContext onDragEnd={onDragEnd}>
-                            <Droppable droppableId='dp1'>
-                                {(provided) => (
-                                    <div ref={provided.innerRef} {...provided.droppableProps}>
-                                        {handleDisplayAssignment(lstAsments)}
-                                        {provided.placeholder}
-                                    </div>
-                                )}
-                            </Droppable>
-                        </DragDropContext>
                     </div>
+    
+                    <TabPeople role={role} lstStudents={lstStudents} lstTeachers={lstTeachers}
+                        fileNameStudentList={fileNameStudentList} displayTeacherStudent={displayTeacherStudent} />
+                    <TabGrade role={role} link={link} />
+    
+    
                 </div>
-
-                <TabPeople role={role} lstStudents={lstStudents} lstTeachers={lstTeachers}
-                    fileNameStudentList={fileNameStudentList} displayTeacherStudent={displayTeacherStudent} />
-                <TabGrade role={role} link={link} />
-
-
+                <InvitateTeacher invitedTeacher={handleInvitedTeacher} />
+                <InvitateStudent invitedStudent={handleInvitedStudent} />
             </div>
-            <InvitateTeacher invitedTeacher={handleInvitedTeacher} />
-            <InvitateStudent invitedStudent={handleInvitedStudent} />
-        </div>
-    )
+        )
+    }
+    else {
+        return <Navigate to='/' />
+    }
+
 }
 export default ShowDetailClass;

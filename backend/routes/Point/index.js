@@ -28,12 +28,12 @@ router.get('/api/GetStudentsWithPoint/:link', function (req, res, next) {
                     let numberStudent;
                     let resultAss;
 
-                    let sqlaccount = `SELECT S.fullName,G.grade,G.mssv,G.assignmentId FROM grade G INNER JOIN assignment Ass ON G.assignmentId=Ass.id
+                    let sqlaccount = `SELECT S.fullName,G.grade,G.mssv,G.assignmentId,G.ismark FROM grade G INNER JOIN assignment Ass ON G.assignmentId=Ass.id
                                     INNER JOIN student S on S.mssv=G.mssv 
                                     INNER JOIN account A ON A.mssv=G.mssv 
                                     INNER JOIN classes CL ON CL.id=Ass.classId WHERE CL.link=?
                                     UNION
-                                    SELECT S.fullName , G.grade, G.mssv, G.assignmentId  FROM grade G
+                                    SELECT S.fullName , G.grade, G.mssv, G.assignmentId,G.ismark  FROM grade G
                                     INNER JOIN student S ON G.mssv = S.mssv WHERE G.mssv not in ( SELECT G1.mssv  FROM assignment Ass  
                                     INNER JOIN grade G1 ON Ass.id = G1.assignmentId 
                                     INNER JOIN account C ON C.mssv = G1.mssv 
@@ -60,8 +60,8 @@ router.get('/api/GetStudentsWithPoint/:link', function (req, res, next) {
                                     res.send(error);
                                 }
                                 resultAss = result1;
-                                let templateGrade = resultAss.map((item, index) => { return { assignmentId: item.id, grade: 0 } });
-                                // res.json(resultSqlAccount);
+                                //let templateGrade = resultAss.map((item, index) => { return { assignmentId: item.id, grade: 0 } });// sau 2/1/2022
+                                let templateGrade = resultAss.map((item, index) => { return { assignmentId: item.id, grade: 0,ismark:'false' } });
                                 let indexFirst = 0;
                                 let indexLast = 0;
                                 let resultReturn = [];
@@ -77,11 +77,13 @@ router.get('/api/GetStudentsWithPoint/:link', function (req, res, next) {
 
                                     let indexAssId = tempLstGrade.findIndex(item => item.assignmentId == resultSqlAccount[indexFirst].assignmentId);
                                     tempLstGrade[indexAssId].grade = resultSqlAccount[indexFirst].grade;
+                                    tempLstGrade[indexAssId].ismark = resultSqlAccount[indexFirst].ismark; //them ngay 2/1/2022
 
                                     for (let j = indexFirst + 1; j < resultSqlAccount.length; j++) {
                                         if (resultSqlAccount[indexFirst].mssv == resultSqlAccount[j].mssv) {
                                             let indexAssiId = tempLstGrade.findIndex(item => item.assignmentId == resultSqlAccount[j].assignmentId);
                                             tempLstGrade[indexAssiId].grade = resultSqlAccount[j].grade;
+                                            tempLstGrade[indexAssiId].ismark = resultSqlAccount[j].ismark;//them ngay 2/1/2022
                                             indexLast = j;
                                         }
                                         else {
@@ -107,7 +109,7 @@ router.get('/api/GetStudentsWithPoint/:link', function (req, res, next) {
                     let resultSqlAccount;
                     let resultAss;
 
-                    let sqlaccount = `SELECT S.fullName,G.grade,G.mssv,G.assignmentId FROM grade G INNER JOIN assignment Ass ON G.assignmentId=Ass.id
+                    let sqlaccount = `SELECT S.fullName,G.grade,G.mssv,G.assignmentId,G.ismark FROM grade G INNER JOIN assignment Ass ON G.assignmentId=Ass.id
                                     INNER JOIN student S on S.mssv=G.mssv 
                                     INNER JOIN account A ON A.mssv=G.mssv 
                                     INNER JOIN classes CL ON CL.id=Ass.classId WHERE CL.link=? and A.id=?`;
@@ -124,7 +126,8 @@ router.get('/api/GetStudentsWithPoint/:link', function (req, res, next) {
                                 res.send(error);
                             }
                             resultAss = result1;
-                            let templateGrade = resultAss.map((item) => { return { assignmentId: item.id, grade: 0 } });
+                            // let templateGrade = resultAss.map((item) => { return { assignmentId: item.id, grade: 0 } }); //cũ sau 2/1/2022
+                            let templateGrade = resultAss.map((item, index) => { return { assignmentId: item.id, grade: 0,ismark:'false' } });
                             let indexFirst = 0;
                             let indexLast = 0;
                             let resultReturn = [];
@@ -139,11 +142,13 @@ router.get('/api/GetStudentsWithPoint/:link', function (req, res, next) {
 
                             let indexAssId = tempLstGrade.findIndex(item => item.assignmentId == resultSqlAccount[indexFirst].assignmentId);
                             tempLstGrade[indexAssId].grade = resultSqlAccount[indexFirst].grade;
+                            tempLstGrade[indexAssId].ismark = resultSqlAccount[indexFirst].ismark; //them ngay 2/1/2022
 
                             for (let j = indexFirst + 1; j < resultSqlAccount.length; j++) {
                                 if (resultSqlAccount[indexFirst].mssv == resultSqlAccount[j].mssv) {
                                     let indexAssiId = tempLstGrade.findIndex(item => item.assignmentId == resultSqlAccount[j].assignmentId);
                                     tempLstGrade[indexAssiId].grade = resultSqlAccount[j].grade;
+                                    tempLstGrade[indexAssiId].ismark = resultSqlAccount[j].ismark;//them ngay 2/1/2022
                                     indexLast = j;
                                 }
                                 else {
@@ -306,9 +311,42 @@ router.get('/api/GetStudentHaveAccount/:link', function (req, res, next) {
     )(req, res, next);
 });
 
+/*Teacher mark final gradecomposition  FINISH */
+router.post('/api/markFinalGradeComposition/:link', function (req, res, next) {
+    passport.authenticate("jwt", { session: false, }, function (err, user, info) {
+        if (err) {
+            return next(err);
+        }
+        if (!user) {
+            res.header({ "Access-Control-Allow-Origin": "*" });
+            res.status(401);
+            res.send({ message: info.message, success: false });
+            return;
+        }
+        let link = req.params.link;
+        let {ismark,mssv,assignmentId } = req.body;
 
-
-
+        const sql = `SELECT cl.role,cl.classId FROM classaccount cl INNER JOIN classes c ON cl.classId=c.id WHERE link=?
+        and cl.accountId=?`;
+        pool.query(sql, [link, user.id], (error, result) => {
+            if (error) {
+                res.send(error);
+            }
+            else {
+                if (result[0].role === "teacher") {
+                    let sqlUpdate = `UPDATE grade SET ismark=? WHERE mssv=? and assignmentId=?`;
+                    pool.query(sqlUpdate, [ismark,mssv,assignmentId], (error, result) => {
+                        if (error) {
+                            res.send(error);
+                        }
+                        res.json({ message: `mark final composition grade success` });
+                    });
+                }
+            }
+        });
+    }
+    )(req, res, next);
+});
 
 
 
