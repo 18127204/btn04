@@ -94,14 +94,56 @@ router.post('/api/addComment', function (req, res, next) {
         }
         let {comment,parentid,createat,assignmentId,finalgrade}=req.body;
         const sql = `INSERT INTO comment (comment,username,accountId,parentid,createat,assignmentId,finalgrade)
-        VALUES (?,?,?,?,?,?,?);
-        `
+        VALUES (?,?,?,?,?,?,?)
+        `;
         pool.query(sql, [comment,user.username,user.id,parentid,createat,assignmentId,finalgrade], (error, result) => {
             if (error) {
                 res.send(error);
             }
             else {
-                res.json(result);
+                const sqlIdCmt =`SELECT DISTINCT C.accountId,C.parentid,G.classId,C.comment FROM comment  C INNER JOIN grade G ON C.assignmentId=G.assignmentId WHERE id=LAST_INSERT_ID()`;
+               
+                pool.query(sqlIdCmt, [user.id], (error, result1) => {
+                    if (error) {
+                        res.send(error);
+                    }
+                    else {
+                        const sqlparentid = `SELECT * from comment WHERE id =?`
+                        pool.query(sqlparentid, [result1[0].parentid], (error, result2) => {
+                            if (error) {
+                                res.send(error);
+                            }
+                            else {
+                                const sqlmssv = `SELECT mssv from account WHERE id =?`;
+                                pool.query(sqlmssv, [result2[0].accountId], (error, result3) => {
+                                    if (error) {
+                                        res.send(error);
+                                    }
+                                    else {
+                                     
+                                        const insertnotice = `INSERT INTO notification (classId,senderId,recipientId,notice)
+                                        VALUES (?,?,?,?)`
+                                        pool.query(insertnotice, [result1[0].classId,result1[0].accountId,result3[0].mssv,result1[0].comment], (error, result4) => {
+                                            if (error) {
+                                                res.send(error);
+                                            }
+                                            else {
+                                                res.json({message:"relpy success"});
+                                                
+                                                
+                                            }
+                                        });
+                                        
+                                    }
+                                });
+                                
+                                
+                            }
+                        });
+                        
+                        
+                    }
+                });
             }
         });
     }
@@ -205,5 +247,6 @@ router.post('/api/addFinalDecision', function (req, res, next) {
     }
     )(req, res, next);
 });
+
 
 module.exports = router;

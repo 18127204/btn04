@@ -28,6 +28,7 @@ var gradeReviewRouter=require('./routes/GradeReview');
 var forgotPasswordRouter=require('./routes/ForgotPassword');
 var adminRouter = require('./routes/Admin');
 var userRouter =require('./routes/user')
+var noticeRouter = require('./routes/Notification');
 var app = express();
 
 // view engine setup
@@ -65,6 +66,7 @@ app.use('/gradeReview',gradeReviewRouter);
 app.use('/forgotPassword',forgotPasswordRouter);
 app.use('/admin',adminRouter);
 app.use('/user',userRouter);
+app.use('/notification',noticeRouter);
 
 
 // catch 404 and forward to error handler
