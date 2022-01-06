@@ -16,6 +16,7 @@ import UploadGradeAssignment from '../UploadGradeAssignment';
 import TabGrade from '../TabGrade';
 import UpdateAssignment from '../UpdateAssignment';
 import RemoveAssignment from '../RemoveAssignment';
+import TabNotifications from '../TabNotifications';
 
 const ShowDetailClass = () => {
     const { link } = useParams();
@@ -234,7 +235,7 @@ const ShowDetailClass = () => {
                                                 <RemoveAssignment infoAss={bt} />
                                                 <ExportAssignmentGrade infoAss={bt} fileName={fileNameAssignmentGrade} />
                                                 <UploadGradeAssignment infoAss={bt} />
-                                                <Link to={`/classroom/${link}/gradereview/${bt.id}`} state={{ infoAss: bt,role:role }} className="btn btn-secondary text-white mr-3">Grade review</Link>
+                                                <Link to={`/classroom/${link}/gradereview/${bt.id}`} state={{ infoAss: bt,role:role,link:link }} className="btn btn-secondary text-white mr-3">Grade review</Link>
                                             </div>
                                         ) : (
                                             <div className='d-flex flex-row'>
@@ -349,8 +350,8 @@ const ShowDetailClass = () => {
                     <TabPeople role={role} lstStudents={lstStudents} lstTeachers={lstTeachers}
                         fileNameStudentList={fileNameStudentList} displayTeacherStudent={displayTeacherStudent} />
                     <TabGrade role={role} link={link} />
-    
-    
+                    <TabNotifications role={role} link={link} />
+                    
                 </div>
                 <InvitateTeacher invitedTeacher={handleInvitedTeacher} />
                 <InvitateStudent invitedStudent={handleInvitedStudent} />

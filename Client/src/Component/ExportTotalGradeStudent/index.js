@@ -43,7 +43,7 @@ const ExportTotalGradeStudent = ({ lstRowNameAss, lstGradeStudent, displayTRowNa
             ) : ('')}
             {(role === 'teacher') ? (
                 <ReactHTMLTableToExcel
-                    className='btn btn-success'
+                    className='btn btn-success mr-3'
                     table='gradeBoardTable'
                     filename='Grade Board AllStudents'
                     sheet='Sheet'

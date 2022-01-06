@@ -6,6 +6,7 @@ import { INFO, TOKEN, INFCLASS, URL_API, URL_FRONTEND } from '../../SettingValue
 import ShowInfoStudentHavingAccount from '../ShowInfoStudentHavingAccount';
 import ReactHTMLTableToExcel from 'react-html-table-to-excel';
 import ExportTotalGradeStudent from '../ExportTotalGradeStudent';
+import CreateNotification from '../CreateNotification';
 const TabGrade = ({ role, link }) => {
     const [lstRowNameAss, setLstRowNameAss] = useState([]);
     const [lstGradeStudent, setLstGradeStudent] = useState([]);
@@ -192,6 +193,7 @@ const TabGrade = ({ role, link }) => {
                 <UploadStudentList role={role} link={link} />
                 <ExportTotalGradeStudent lstRowNameAss={lstRowNameAss} lstGradeStudent={lstGradeStudent}
                     displayTRowNameAssignment={displayTRowNameAssignment} handleTotalGrade={handleTotalGrade} role={role} />
+                <CreateNotification role={role} link={link} />
             </div>
 
             <table className="table" id='emp-table1'>

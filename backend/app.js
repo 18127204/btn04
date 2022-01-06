@@ -20,15 +20,15 @@ var pointRouter = require('./routes/Point');
 var excelRouter = require('./routes/FileExcel');
 var importExcelRouter=require('./routes/ImportExcel');
 var profileRouter = require('./routes/Profile');
-var AuthorizationRouter=require('./routes/Authorization');
-var GoogleSigninRouter = require('./routes/GoogleSignIn');
-var FacebookSigninRouter = require('./routes/FacebookSignIn');
+var authorizationRouter=require('./routes/Authorization');
+var googleSigninRouter = require('./routes/GoogleSignIn');
+var facebookSigninRouter = require('./routes/FacebookSignIn');
 var usersRouter = require('./routes/Eliminated/users');
 var gradeReviewRouter=require('./routes/GradeReview');
 var forgotPasswordRouter=require('./routes/ForgotPassword');
 var adminRouter = require('./routes/Admin');
-var userRouter =require('./routes/user')
-var noticeRouter = require('./routes/Notification');
+var userRouter =require('./routes/user');
+var noticeRouter=require('./routes/Notification');
 var app = express();
 
 // view engine setup
@@ -59,14 +59,15 @@ app.use('/point',pointRouter);
 app.use('/fileExcel',excelRouter);
 app.use('/importExcel',importExcelRouter);
 app.use('/profile',profileRouter);
-app.use('/idenRole',AuthorizationRouter);
-app.use('/google-sign-in',GoogleSigninRouter);
-app.use('/facebook-sign-in',FacebookSigninRouter);
+app.use('/idenRole',authorizationRouter);
+app.use('/google-sign-in',googleSigninRouter);
+app.use('/facebook-sign-in',facebookSigninRouter);
 app.use('/gradeReview',gradeReviewRouter);
 app.use('/forgotPassword',forgotPasswordRouter);
 app.use('/admin',adminRouter);
 app.use('/user',userRouter);
 app.use('/notification',noticeRouter);
+
 
 
 // catch 404 and forward to error handler

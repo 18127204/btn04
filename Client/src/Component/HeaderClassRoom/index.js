@@ -28,6 +28,9 @@ const HeaderClassRoom = () => {
                         <li className="nav-item">
                             <a className="nav-link" data-toggle="pill" href="#Grade">Grade</a>
                         </li>
+                        <li className="nav-item">
+                            <a className="nav-link" data-toggle="pill" href="#Notification">Notification</a>
+                        </li>
                     </ul>
 
                     <div className="nav-item dropdown my-2 my-lg-0">

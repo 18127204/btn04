@@ -72,7 +72,7 @@ const CommentForm = ({ submitLabel, addComment, handleCancel, hasCancelButton = 
                     </div>
                 </div>)}
 
-            {(submitLabel === 'Reply') || (submitLabel === 'Decision') && (
+            {((submitLabel === 'Reply') || (submitLabel === 'Decision')) && (
                 <div className="form-group">
                     <textarea className="form-control comment-form-textarea" name="comment" rows="3" onChange={handleChange} required />
                 </div>)}
