@@ -10,7 +10,7 @@ var URL_FRONTEND=process.env.URL_FRONTEND;
 var URL_BACKEND=process.env.URL_BACKEND;
 /*Create account */
 router.post('/', function (req, res, next) {
-    const { username, password, email, name, phone } = req.body;
+    const { username, password, email, name, phone,createat } = req.body;
     let emailVerify = uuidv4();
     // res.json({message:process.env.URL_BACKEND});
     const sqlRegister = "INSERT INTO account (username,password,email,name,phone,emailVerify,lockacc,isadmin,createat) values(?,?,?,?,?,?,?,?,?)";

@@ -27,7 +27,6 @@ router.get('/api/GetStudentsWithPoint/:link', function (req, res, next) {
                     let resultSqlAccount;
                     let numberStudent;
                     let resultAss;
-
                     let sqlaccount = `SELECT S.fullName,G.grade,G.mssv,G.assignmentId,G.ismark FROM grade G 
                                     INNER JOIN assignment Ass ON G.assignmentId=Ass.id
                                     INNER JOIN student S on S.mssv=G.mssv 

@@ -24,7 +24,7 @@ const Register = () => {
         });
     }
     const handleRegister = (event) => {
-        event.preventDefault();
+        // event.preventDefault();
         if (userRegister.password === userRegister.confirmpassword) {
             let promise = Axios({
                 url: `${URL_API}/register`,
@@ -37,8 +37,8 @@ const Register = () => {
                 navigate("/");
             })
             promise.catch((err) => {
-
-                console.log('register failed', err);
+                // alert(`register failed`,{createat:new Date().toISOString(),...userRegister});
+                console.log('register failed', {createat:new Date().toISOString(),...userRegister});
             });
         }
         else {
