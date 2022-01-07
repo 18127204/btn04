@@ -28,7 +28,8 @@ router.get('/api/GetStudentsWithPoint/:link', function (req, res, next) {
                     let numberStudent;
                     let resultAss;
 
-                    let sqlaccount = `SELECT S.fullName,G.grade,G.mssv,G.assignmentId,G.ismark FROM grade G INNER JOIN assignment Ass ON G.assignmentId=Ass.id
+                    let sqlaccount = `SELECT S.fullName,G.grade,G.mssv,G.assignmentId,G.ismark FROM grade G 
+                                    INNER JOIN assignment Ass ON G.assignmentId=Ass.id
                                     INNER JOIN student S on S.mssv=G.mssv 
                                     INNER JOIN account A ON A.mssv=G.mssv 
                                     INNER JOIN classes CL ON CL.id=Ass.classId WHERE CL.link=?
@@ -106,10 +107,12 @@ router.get('/api/GetStudentsWithPoint/:link', function (req, res, next) {
                     });
                 }
                 else if (resultRole[0].role === 'student') {
+
                     let resultSqlAccount;
                     let resultAss;
 
-                    let sqlaccount = `SELECT S.fullName,G.grade,G.mssv,G.assignmentId,G.ismark FROM grade G INNER JOIN assignment Ass ON G.assignmentId=Ass.id
+                    let sqlaccount = `SELECT S.fullName,G.grade,G.mssv,G.assignmentId,G.ismark FROM grade G 
+                                    INNER JOIN assignment Ass ON G.assignmentId=Ass.id
                                     INNER JOIN student S on S.mssv=G.mssv 
                                     INNER JOIN account A ON A.mssv=G.mssv 
                                     INNER JOIN classes CL ON CL.id=Ass.classId WHERE CL.link=? and A.id=?`;
@@ -117,6 +120,7 @@ router.get('/api/GetStudentsWithPoint/:link', function (req, res, next) {
                         if (error) {
                             res.send(error);
                         }
+                        if (result.length) {
                         resultSqlAccount = result;
                         let sqlGetAllAss = `SELECT ass.id FROM classaccount cla INNER JOIN classes c ON cla.classId=c.id INNER JOIN assignment ass
                         ON c.id=ass.classId WHERE c.link=? and cla.accountId=? ORDER BY ASS.rank ASC`;
@@ -166,12 +170,19 @@ router.get('/api/GetStudentsWithPoint/:link', function (req, res, next) {
                             res.json(resultReturn);
 
                         });
+                        }
+                        else {
+                            res.json([])
+                        }
 
                     });
+                
                 }
+            
 
             }
         });
+        
 
 
     }
@@ -235,14 +246,36 @@ router.post('/api/UploadStudentsExcelFile/:link', function (req, res, next) {
                         if (error) {
                             res.send(error);
                         }
+                        else {
+                            const sqlinsertclass =`SELECT id FROM account WHERE mssv=?`;
+                            pool.query(sqlinsertclass, [arr[i].StudentId], (error, result2) => {
+                                if (error) {
+                                    res.send(error);
+                                }
+                                else {
+                                      if (result2.length) {
+                                        let sqlUpdate = `INSERT INTO classaccount (accountId,classId,role) VALUES (?,?,?) ON DUPLICATE KEY UPDATE role=?`;
+                                        pool.query(sqlUpdate, [result2[0].id,ID,"student","student"], (error, result4) => {
+                                            if (error) {
+                                                res.send(error);
+                                            }
+                                        });
+                                      }
+        
+                                }
+                            });
+
+                        }
                     });
                 }
+                
                 res.json({ message: "insert student success" });
             }
         });
     }
     )(req, res, next);
 });
+
 
 /*Teacher Edit Grade FINISH */
 router.put('/api/UpdatePointAssigmentStudent/:link', function (req, res, next) {
