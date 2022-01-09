@@ -1,5 +1,5 @@
 import React from 'react';
-import { INFO, TOKEN, INFCLASS, URL_API, URL_FRONTEND, ISADMIN } from '../../SettingValue';
+import {TOKEN,ISADMIN } from '../../SettingValue';
 import { Navigate } from 'react-router-dom';
 import HeaderAdmin from '../HeaderAdmin';
 import ManageClasses from '../ManageClasses';

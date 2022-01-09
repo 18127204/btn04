@@ -1,8 +1,7 @@
 
 import React from 'react';
-import { INFO, TOKEN, INFCLASS, URL_API, URL_FRONTEND } from '../../SettingValue';
+import {TOKEN,URL_API} from '../../SettingValue';
 import { useState, useEffect } from 'react';
-import UploadStudentList from '../UploadStudentList'
 import Axios from 'axios';
 const TabNotifications = ({ role, link }) => {
     const [lstNotifi, setLstNodifi] = useState([]);
@@ -18,7 +17,7 @@ const TabNotifications = ({ role, link }) => {
     const getAllListNotifications = () => {
         let promise = Axios({
             method: 'GET',
-            url: `${URL_API}/notification/api/getAllNotification`,
+            url: `${URL_API}/notification/api/getAllNotification/${link}`,
             headers: { 'Authorization': 'Bearer ' + localStorage.getItem(TOKEN) }
         });
         promise.then((res) => {
@@ -31,7 +30,7 @@ const TabNotifications = ({ role, link }) => {
     //
     const handleShowNotification = (lst,role) => {
         if (lst.length) {
-            console.log('handleShowNotification',lst);
+            // console.log('handleShowNotification',lst);
             return lst.map((item, index) => {
                 if (item.typeNotification === 'finalgradecomposition') {
                     return (

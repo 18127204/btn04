@@ -1,6 +1,6 @@
 import React from 'react'
-import { INFO, TOKEN, INFCLASS, URL_API, URL_FRONTEND } from '../../SettingValue';
-import { useState} from 'react';
+import { TOKEN, URL_API } from '../../SettingValue';
+import { useState } from 'react';
 import Axios from 'axios';
 import * as XLSX from "xlsx";
 
@@ -32,7 +32,7 @@ const UploadGradeAssignment = ({ infoAss }) => {
         let promise = Axios({
             method: 'POST',
             url: `${URL_API}/assignment/api/GradeStudentsAssignment`,
-            data:{lstAss:JSON.stringify(lstGradeAss),assignmentId:infoAss.id},
+            data: { lstAss: JSON.stringify(lstGradeAss), assignmentId: infoAss.id },
             headers: { 'Authorization': 'Bearer ' + localStorage.getItem(TOKEN) }
         });
         promise.then((res) => {

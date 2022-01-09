@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { INFO, TOKEN, URL_FRONTEND, ISADMIN, URL_API } from '../../SettingValue';
+import {TOKEN, URL_API } from '../../SettingValue';
 import Axios from 'axios';
 const MapStudentId = ({ infoPeople, getAllListUser }) => {
     const [valuesForm, setValuesForm] = useState(

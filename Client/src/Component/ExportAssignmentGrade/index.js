@@ -1,7 +1,7 @@
 import React from 'react';
 import Axios from 'axios';
 import * as XLSX from "xlsx";
-import { INFO, TOKEN, INFCLASS, URL_API, URL_FRONTEND } from '../../SettingValue';
+import {TOKEN, URL_API} from '../../SettingValue';
 const ExportAssignmentGrade = ({ infoAss, fileName }) => {
     const headers = [['StudentID', 'Grade']];
 

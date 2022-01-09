@@ -18,7 +18,7 @@ const ExportTotalGradeStudent = ({ lstRowNameAss, lstGradeStudent, displayTRowNa
                     <tr key={`trGrade${i}`}>
                         <td>{arrayGradeStu[i].mssv}</td>
                         {tdGrade}
-                        <td>{handleTotalGrade(lstRowNameAss, arrayGradeStu[i].lstAssAndGrade)}</td>
+                        {handleTotalGrade(lstRowNameAss, arrayGradeStu[i].lstAssAndGrade)}
                     </tr>
                 )
                 result.push(temp);

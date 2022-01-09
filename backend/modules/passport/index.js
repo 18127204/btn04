@@ -41,7 +41,7 @@ opts.secretOrKey = process.env.jwt_secret;
 
 passport.use(new JwtStrategy(opts, function (jwt_payload, done) {
     //return done(null, { id: jwt_payload.id, username: jwt_payload.username });//req.user
-    console.log(jwt_payload)
+    // console.log(jwt_payload)
     return done(null, { id: jwt_payload.id, username: jwt_payload.username,isadmin:jwt_payload.isadmin  });//req.user
 }));
 module.exports = passport;

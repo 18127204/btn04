@@ -88,4 +88,49 @@ router.put('/api/UpdateProfile', function (req, res, next) {
     }
     )(req, res, next);
 });
+
+
+/*Change password FINISH*/
+router.post('/api/ChangePassword', function (req, res, next) {
+    passport.authenticate("jwt", { session: false, }, function (err, user, info) {
+        if (err) {
+            return next(err);
+        }
+        if (!user) {
+            res.header({ "Access-Control-Allow-Origin": "*" });
+            res.status(401);
+            res.send({ message: info.message, success: false });
+            return;
+        }
+        const {currentPass,newPass} =req.body;
+
+        const sqlCheckPass =`SELECT * FROM account WHERE password=?`;
+
+        pool.query(sqlCheckPass, [currentPass], (error, resultCheckPass) => {
+            if (error) {
+                res.send(error);
+            }
+            else {
+                if(resultCheckPass.length) {
+                    const sqlUpdatePassword = `UPDATE account SET password=? WHERE id=?`;
+                    pool.query(sqlUpdatePassword, [newPass,user.id], (error, result) => {
+                        if (error) {
+                            res.send(error);
+                        }
+                        else {
+                            res.json({status:'success'});
+                        }
+
+                    });
+                }
+                else {
+                    res.json({status:'notmatch'});
+                }
+                
+            }
+        });
+    }
+    )(req, res, next);
+});
+
 module.exports = router;

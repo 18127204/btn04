@@ -1,14 +1,14 @@
 import React from 'react'
-import { INFO, TOKEN, INFCLASS, URL_API, URL_FRONTEND } from '../../SettingValue';
-import { useState} from 'react';
+import { TOKEN, URL_API } from '../../SettingValue';
+import { useState } from 'react';
 import Axios from 'axios';
 
-const UpdateAssignment = ({infoAss,link}) => {
+const UpdateAssignment = ({ infoAss, link }) => {
     const [valuesForm, setValuesForm] = useState(
         {
             name: infoAss.name,
             description: infoAss.description,
-            grade:infoAss.grade
+            grade: infoAss.grade
         }
     )
     const handleChange = (e) => {
@@ -17,11 +17,11 @@ const UpdateAssignment = ({infoAss,link}) => {
     }
 
     const handleSubmit = (e) => {
-        let dataSend={...valuesForm,link,id:infoAss.id};
+        let dataSend = { ...valuesForm, link, id: infoAss.id };
         let promise = Axios({
             method: 'PUT',
             url: `${URL_API}/assignment/api/UpdateAssignment`,
-            data:dataSend,
+            data: dataSend,
             headers: { 'Authorization': 'Bearer ' + localStorage.getItem(TOKEN) }
         });
         promise.then((res) => {
@@ -47,11 +47,11 @@ const UpdateAssignment = ({infoAss,link}) => {
                             <div className="modal-body">
                                 <div className="form-group">
                                     <p>Name</p>
-                                    <input type="text" className="form-control" defaultValue={infoAss.name} name="name" onChange={handleChange}  />
+                                    <input type="text" className="form-control" defaultValue={infoAss.name} name="name" onChange={handleChange} />
                                 </div>
                                 <div className="form-group">
                                     <p>Description</p>
-                                    <input type="text" className="form-control" defaultValue={infoAss.description} name="description" onChange={handleChange}  />
+                                    <input type="text" className="form-control" defaultValue={infoAss.description} name="description" onChange={handleChange} />
                                 </div>
                                 <div className="form-group">
                                     <p>Grade</p>

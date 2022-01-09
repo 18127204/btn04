@@ -1,10 +1,10 @@
 import React from 'react'
-import { INFO, TOKEN, INFCLASS, URL_API, URL_FRONTEND } from '../../SettingValue';
-import { useState} from 'react';
+import { TOKEN, URL_API } from '../../SettingValue';
+import { useState } from 'react';
 import Axios from 'axios';
 import * as XLSX from "xlsx";
 
-const UploadStudentList = ({role,link}) => {
+const UploadStudentList = ({ role, link }) => {
     const [lstStudent, setLstStudent] = useState([]);
 
     const readExcelStudentList = (file) => {
@@ -34,7 +34,7 @@ const UploadStudentList = ({role,link}) => {
         let promise = Axios({
             method: 'POST',
             url: `${URL_API}/point/api/UploadStudentsExcelFile/${link}`,
-            data:{dataSend:JSON.stringify(lstStudent)},
+            data: { dataSend: JSON.stringify(lstStudent) },
             headers: { 'Authorization': 'Bearer ' + localStorage.getItem(TOKEN) }
         });
         promise.then((res) => {
@@ -46,7 +46,7 @@ const UploadStudentList = ({role,link}) => {
     }
     return (
         <div>
-            {(role === 'teacher')?(<button className='btn btn-success mr-3' data-toggle="modal" data-target='#modelUploadStudentList' >Upload Student List</button>):('')}
+            {(role === 'teacher') ? (<button className='btn btn-success mr-3' data-toggle="modal" data-target='#modelUploadStudentList' >Upload Student List</button>) : ('')}
             <div className="modal fade" id='modelUploadStudentList' tabIndex={-1} role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
                 <div className="modal-dialog" role="document">
                     <div className="modal-content">

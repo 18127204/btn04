@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Axios from 'axios';
-import { URL_API, INFO, TOKEN } from '../../SettingValue';
+import { URL_API} from '../../SettingValue';
 import './index.css';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
@@ -38,7 +38,8 @@ const Register = () => {
             })
             promise.catch((err) => {
                 // alert(`register failed`,{createat:new Date().toISOString(),...userRegister});
-                console.log('register failed', {createat:new Date().toISOString(),...userRegister});
+                // console.log('register failed', {createat:new Date().toISOString(),...userRegister});
+                console.log('register failed',err);
             });
         }
         else {
@@ -63,7 +64,7 @@ const Register = () => {
                                     <input type="text" name="name" className="form-control d-inline sizeInputRegister" placeholder="Fullname" onChange={handleInput} />
                                 </div>
                                 <div className="form-group sizeformGroupRegister">
-                                    <input type="text" name="phone" className="form-control d-inline sizeInputRegister" placeholder="Phone" onChange={handleInput} />
+                                    <input type="number" name="phone" className="form-control d-inline sizeInputRegister" placeholder="Phone" onChange={handleInput} />
                                 </div>
                                 <div className="form-group sizeformGroupRegister">
                                     <input type="password" name="password" className="form-control d-inline sizeInputRegister" placeholder="Password" onChange={handleInput} />

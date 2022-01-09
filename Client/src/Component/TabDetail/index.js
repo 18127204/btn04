@@ -1,5 +1,5 @@
 import React from 'react';
-import { INFO, TOKEN, INFCLASS, URL_API, URL_FRONTEND } from '../../SettingValue';
+import {URL_FRONTEND } from '../../SettingValue';
 const TabDetail = ({infoClass,infoGradeStructure,displayInfoGradeStructure}) => {
     return (
         <div id="Newsfeed" className="container tab-pane active container">

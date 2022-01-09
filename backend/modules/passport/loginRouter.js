@@ -16,6 +16,7 @@ router.post('/',passport.authenticate('local',{session:false}),(req, res, next)=
         { expiresIn:'1h'})
     });
 });
+
 router.get("/abc", function (req, res, next) {
     passport.authenticate(
       "jwt",

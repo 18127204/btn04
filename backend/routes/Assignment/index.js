@@ -47,7 +47,7 @@ router.get('/api/GetALLListAssignment/:link', function (req, res, next) {
             return;
         }
         let link = req.params.link;
-        let sql = `SELECT ass.id,ass.classId,ass.name,ass.creatorId,ass.description,ass.grade,ass.rank FROM classaccount cla INNER JOIN classes c ON cla.classId=c.id INNER JOIN assignment ass
+        let sql = `SELECT ass.id,ass.classId,ass.name,ass.creatorId,ass.description,ass.grade,ass.rank,ass.mark FROM classaccount cla INNER JOIN classes c ON cla.classId=c.id INNER JOIN assignment ass
         ON c.id=ass.classId WHERE c.link=? and cla.accountId=? ORDER BY ASS.rank ASC
         `;
         pool.query(sql, [link, user.id], (error, result) => {

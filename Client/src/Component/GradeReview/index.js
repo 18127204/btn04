@@ -1,5 +1,5 @@
 import React from 'react';
-import { INFO, TOKEN, INFCLASS, URL_API, URL_FRONTEND } from '../../SettingValue';
+import { INFO, TOKEN,URL_API} from '../../SettingValue';
 import { useParams, useLocation, Navigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Axios from 'axios';

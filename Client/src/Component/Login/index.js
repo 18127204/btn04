@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaUser, FaLock, FaGooglePlusG } from "react-icons/fa";
+import { FaUser, FaLock} from "react-icons/fa";
 import './index.css';
 import Axios from 'axios';
 import { URL_API, INFO, TOKEN,ISADMIN } from '../../SettingValue';
@@ -52,7 +52,7 @@ const Login = () => {
 
     const responseGoogle = (response) => {
         console.log("quang");
-        console.log(response);
+        // console.log(response);
         let promise = Axios({
             url: `${URL_API}/google-sign-in/api`,
             method: 'POST',
@@ -74,14 +74,14 @@ const Login = () => {
 
     }
     const responseFacebook = (response) => {
-        console.log(response);
+        // console.log(response);
         let promise = Axios({
             url: `${URL_API}/facebook-sign-in/api`,
             method: 'POST',
             data: { tokenId: response.accessToken }
         });
         promise.then((result) => {
-            console.log('kq tra ve sau login', result);
+            // console.log('kq tra ve sau login', result);
             localStorage.setItem(INFO, JSON.stringify(result.data.content));
             localStorage.setItem(TOKEN, result.data.tokenAccess);
             navigate("/classroom");

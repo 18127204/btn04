@@ -1,5 +1,5 @@
-import React, { Component, useState, useEffect } from 'react'
-import { URL_API, INFO, TOKEN } from '../../SettingValue';
+import React, { useState, useEffect } from 'react'
+import { URL_API, TOKEN } from '../../SettingValue';
 import Header from '../Header/Header';
 import Class from '../Classroom';
 import Axios from 'axios';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { INFO, TOKEN, INFCLASS, URL_API, URL_FRONTEND } from '../../SettingValue';
+import {TOKEN, INFCLASS, URL_API, URL_FRONTEND } from '../../SettingValue';
 import { useParams, Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';

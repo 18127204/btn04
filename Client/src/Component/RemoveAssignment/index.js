@@ -1,5 +1,5 @@
 import React from 'react'
-import { INFO, TOKEN, INFCLASS, URL_API, URL_FRONTEND } from '../../SettingValue';
+import {TOKEN,URL_API} from '../../SettingValue';
 import Axios from 'axios';
 const RemoveAssignment = ({infoAss}) => {
 

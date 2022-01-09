@@ -2,9 +2,8 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import UploadStudentList from '../UploadStudentList'
 import Axios from 'axios';
-import { INFO, TOKEN, INFCLASS, URL_API, URL_FRONTEND } from '../../SettingValue';
+import { TOKEN, URL_API } from '../../SettingValue';
 import ShowInfoStudentHavingAccount from '../ShowInfoStudentHavingAccount';
-import ReactHTMLTableToExcel from 'react-html-table-to-excel';
 import ExportTotalGradeStudent from '../ExportTotalGradeStudent';
 import CreateNotification from '../CreateNotification';
 const TabGrade = ({ role, link }) => {
@@ -12,7 +11,6 @@ const TabGrade = ({ role, link }) => {
     const [lstGradeStudent, setLstGradeStudent] = useState([]);
     const [infoEditPoint, setInfoEditPoint] = useState('');
     const [lstHasAccount, setLstHasAccount] = useState([]);
-    const [lstGetTotalGrade, setLstGetTotalGrade] = useState([]);
     //Run 1st
     useEffect(() => {
         getListRowNameAssignment();
@@ -85,8 +83,16 @@ const TabGrade = ({ role, link }) => {
             let tRow = [];
             tRow.push(<th key={0}>ID Students</th>);
             lst.map((item, index) => {
-                tRow.push(<th key={index + 1}>{item.name} ({item.grade} đ)</th>);
+                tRow.push(
+                    <th key={index + 1}>{item.name} ({item.grade} đ)
+                        {(role === 'teacher') ? 
+                        (<input key={`tisfin${index}`} type="checkbox" defaultChecked={item.mark === 'true' ? true : false}
+                        onChange={() => { handleMarkFinalColumGrade(item.id, !(item.mark === 'true' ? true : false)) }}/>) : ('')}
+    
+
+                    </th>);
             });
+
             tRow.push(<th key={lst.length + 2}>Total Grade</th>);
             return tRow;
         }
@@ -148,6 +154,20 @@ const TabGrade = ({ role, link }) => {
         });
     }
 
+    const handleMarkFinalColumGrade = (idAssign, newIsMark) => {
+        let promise = Axios({
+            method: 'POST',
+            url: `${URL_API}/point/api/markFinalColumnGrade/${link}`,
+            data: { ismark: newIsMark.toString(), assignmentId: idAssign },
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem(TOKEN) }
+        });
+        promise.then((res) => {
+            console.log('handleMarkGradeComposition', res.data.message);
+        });
+        promise.catch((error) => {
+            console.log('handleMarkGradeComposition failed', error);
+        });
+    }
     const displayTBody = (arrayGradeStu, lstStudentHaveAcc) => {
         let result = [];
         if (arrayGradeStu.length && lstStudentHaveAcc.length) {
@@ -158,13 +178,13 @@ const TabGrade = ({ role, link }) => {
                         <td key={`tdGrade${index}`}>
                             {(role === 'teacher') ?
                                 (<div className='d-flex flex-row'>
-                                    <input type="text" className="form-control" name={`${arrayGradeStu[i].mssv}:${item.assignmentId}`}
+                                    <input type="number" className="form-control" name={`${arrayGradeStu[i].mssv}:${item.assignmentId}`}
                                         defaultValue={item.grade} onChange={handleChangeEditGrade} onBlur={handleUpdatePoint} />
                                     <input key={`tismark${index}`} type="checkbox" defaultChecked={item.ismark === 'true' ? true : false}
                                         onChange={() => { handleMarkGradeComposition(item, arrayGradeStu[i].mssv, !(item.ismark === 'true' ? true : false)) }} />
                                 </div>) :
 
-                                (<input type="text" className="form-control" readOnly value={item.ismark === 'true' ? (item.grade) : ('')} />)
+                                (<input type="number" className="form-control" readOnly value={item.ismark === 'true' ? (item.grade) : ('')} />)
                             }
 
                         </td>
@@ -176,7 +196,7 @@ const TabGrade = ({ role, link }) => {
                         {checkHavingAccount(arrayGradeStu[i].mssv, lstStudentHaveAcc) ? (<td><ShowInfoStudentHavingAccount infoShow={getInfoStudent(arrayGradeStu[i].mssv, lstHasAccount)} /></td>) : (<td>{arrayGradeStu[i].fullName}</td>)}
                         {tdGrade}
                         {/* <td>{handleTotalGrade(lstRowNameAss, arrayGradeStu[i].lstAssAndGrade)}</td> */}
-                        {handleTotalGrade(lstRowNameAss,arrayGradeStu[i].lstAssAndGrade,role)}
+                        {handleTotalGrade(lstRowNameAss, arrayGradeStu[i].lstAssAndGrade, role)}
                     </tr>
                 )
                 result.push(temp);

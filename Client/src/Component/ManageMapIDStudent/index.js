@@ -1,6 +1,6 @@
 //ManageMapIDStudent
 import React from 'react';
-import { INFO, TOKEN, URL_FRONTEND, ISADMIN, URL_API } from '../../SettingValue';
+import {TOKEN,URL_API } from '../../SettingValue';
 import { useState, useEffect } from 'react';
 import Axios from 'axios';
 import MapStudentId from '../MapStudentId';

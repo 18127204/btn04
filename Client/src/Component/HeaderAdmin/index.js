@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { INFO, TOKEN, INFCLASS, ISADMIN  } from '../../SettingValue';
+import { INFO, TOKEN, ISADMIN  } from '../../SettingValue';
 import { Navigate } from 'react-router-dom';
 const HeaderAdmin = () => {
     const handleLogOut = () => {

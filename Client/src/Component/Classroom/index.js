@@ -1,7 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom';
 const Class =({cl}) => {
-   // let {tenlophoc,phan,chude,phong,duonglink} = props.cl;
    let {name, description,room, link} = cl;
     return (
 

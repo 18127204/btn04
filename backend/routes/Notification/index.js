@@ -3,6 +3,7 @@ const router = express.Router();
 var pool = require('../Pool');
 var passport = require('../../modules/passport');
 
+/*Create Notification FINISH */
 router.post('/api/CreateNotice', function (req, res, next) {
     passport.authenticate("jwt", { session: false, }, function (err, user, info) {
         if (err) {
@@ -60,7 +61,8 @@ router.post('/api/CreateNotice', function (req, res, next) {
     )(req, res, next);
 });
 
-router.get('/api/getAllNotification', function (req, res, next) {
+/*Get all notification FINISH */
+router.get('/api/getAllNotification/:link', function (req, res, next) {
     passport.authenticate("jwt", { session: false, }, function (err, user, info) {
         if (err) {
             return next(err);
@@ -71,6 +73,7 @@ router.get('/api/getAllNotification', function (req, res, next) {
             res.send({ message: info.message, success: false });
             return;
         }
+        let link = req.params.link;
         const sqlGetmssv = `SELECT mssv from account WHERE id=?`;
         pool.query(sqlGetmssv, [user.id], (error, resultmssv) => {
             if (error) {
@@ -78,13 +81,26 @@ router.get('/api/getAllNotification', function (req, res, next) {
             }
             // res.json({mssv:resultmssv[0].mssv,id:user.id});
             else {
-                const sqlNotifi = `SELECT nof.*,acc.username from notification nof inner join account acc on (acc.id=nof.senderId or acc.mssv=nof.senderId) where recipientId=? or recipientId=?`;
-                pool.query(sqlNotifi, [user.id, resultmssv[0].mssv], (error, resultNoti) => {
+                const sqlGetIdClass = `SELECT id from classes WHERE link=?`;
+                pool.query(sqlGetIdClass, [link], (error, resultIdClass) => {
                     if (error) {
                         res.send(error);
                     }
-                    res.json(resultNoti);
+                    const sqlNotifi = `SELECT nof.*,acc.username from notification nof inner join account acc on (acc.id=nof.senderId or acc.mssv=nof.senderId) where recipientId=? or recipientId=? and classId=?`;
+                    pool.query(sqlNotifi, [user.id, resultmssv[0].mssv,resultIdClass[0].id], (error, resultNoti) => {
+                        if (error) {
+                            res.send(error);
+                        }
+                        if(resultNoti.length){
+                            res.json(resultNoti);
+                        }
+                        else{
+                            res.json([]);
+                        }
+                    });
                 });
+
+
             }
         });
 

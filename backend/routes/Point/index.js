@@ -380,6 +380,53 @@ router.post('/api/markFinalGradeComposition/:link', function (req, res, next) {
     )(req, res, next);
 });
 
+/*Teacher mark final COLUMNS gradecomposition   */
+router.post('/api/markFinalColumnGrade/:link', function (req, res, next) {
+    passport.authenticate("jwt", { session: false, }, function (err, user, info) {
+        if (err) {
+            return next(err);
+        }
+        if (!user) {
+            res.header({ "Access-Control-Allow-Origin": "*" });
+            res.status(401);
+            res.send({ message: info.message, success: false });
+            return;
+        }
+        let link = req.params.link;
+        let {ismark,assignmentId } = req.body;
+
+        const sql = `SELECT cl.role,cl.classId FROM classaccount cl INNER JOIN classes c ON cl.classId=c.id WHERE link=?
+        and cl.accountId=?`;
+        pool.query(sql, [link, user.id], (error, result) => {
+            if (error) {
+                res.send(error);
+            }
+            else {
+                if (result[0].role === "teacher") {
+                    let sqlUpdate = `UPDATE grade SET ismark=? WHERE assignmentId=?`;
+                    pool.query(sqlUpdate, [ismark,assignmentId], (error, result) => {
+                        if (error) {
+                            res.send(error);
+                        }
+                        let sqlUpdateMarkAssignment=`UPDATE assignment SET mark=? WHERE id=?`;
+                        pool.query(sqlUpdateMarkAssignment, [ismark,assignmentId], (error, result) => {
+                            if (error) {
+                                res.send(error);
+                            }
+                            res.json({ message: `mark final composition grade success` });
+                        });
+                        
+                    });
+                }
+            }
+        });
+    }
+    )(req, res, next);
+});
+
+
+
+
 
 
 
