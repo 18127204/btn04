@@ -38,71 +38,86 @@ router.get('/api/GetStudentsWithPoint/:link', function (req, res, next) {
                                     INNER JOIN grade G1 ON Ass.id = G1.assignmentId 
                                     INNER JOIN account C ON C.mssv = G1.mssv 
                                     INNER JOIN classes CL ON CL.id=Ass.classId
-                                    WHERE CL.link =? )`;
-                    pool.query(sqlaccount, [link, link], (error, result) => {
+                                    WHERE CL.link =? ) AND G.classId in (SELECT id FROM classes WHERE link=?)`;
+                    pool.query(sqlaccount, [link, link, link], (error, result) => {
                         if (error) {
                             res.send(error);
                         }
-                        resultSqlAccount = result;
-
-                        let sqlGetNumberStudent = `SELECT COUNT(ST.mssv) as SL FROM classes CL INNER JOIN student ST 
+                        if (result.length) {
+                            resultSqlAccount = result;
+                            let sqlGetNumberStudent = `SELECT COUNT(ST.mssv) as SL FROM classes CL INNER JOIN student ST 
                         ON CL.id=ST.classId WHERE CL.link=?`; /// bao nhieu thang hoc lop cung link
-                        pool.query(sqlGetNumberStudent, [link], (error, result) => {
-                            if (error) {
-                                res.send(error);
-                            }
-                            numberStudent = result[0].SL; /// so luong cua result
-                            let sqlGetAllAss = `SELECT ass.id FROM classaccount cla INNER JOIN classes c ON cla.classId=c.id INNER JOIN assignment ass
-                            ON c.id=ass.classId WHERE c.link=? and cla.accountId=? ORDER BY ASS.rank ASC`;
-                            //lay all assignmen trong link
-                            pool.query(sqlGetAllAss, [link, user.id], (error, result1) => {
+                            pool.query(sqlGetNumberStudent, [link], (error, result) => {
                                 if (error) {
                                     res.send(error);
                                 }
-                                resultAss = result1;
-                                //let templateGrade = resultAss.map((item, index) => { return { assignmentId: item.id, grade: 0 } });// sau 2/1/2022
-                                let templateGrade = resultAss.map((item, index) => { return { assignmentId: item.id, grade: 0,ismark:'false' } });
-                                let indexFirst = 0;
-                                let indexLast = 0;
-                                let resultReturn = [];
-                                for (let i = 0; i < Number(numberStudent); i++) {
-                                    let temp = {
-                                        mssv: resultSqlAccount[indexFirst].mssv,
-                                        fullName: resultSqlAccount[indexFirst].fullName,
-                                        lstAssAndGrade: []
+                                numberStudent = result[0].SL; /// so luong cua result
+                                let sqlGetAllAss = `SELECT ass.id FROM classaccount cla INNER JOIN classes c ON cla.classId=c.id INNER JOIN assignment ass
+                            ON c.id=ass.classId WHERE c.link=? and cla.accountId=? ORDER BY ASS.rank ASC`;
+                                //lay all assignmen trong link
+                                pool.query(sqlGetAllAss, [link, user.id], (error, result1) => {
+                                    if (error) {
+                                        res.send(error);
                                     }
-                                    let tempLstGrade = templateGrade.map((item) => {
-                                        return { ...item };
-                                    })
-
-                                    let indexAssId = tempLstGrade.findIndex(item => item.assignmentId == resultSqlAccount[indexFirst].assignmentId);
-                                    tempLstGrade[indexAssId].grade = resultSqlAccount[indexFirst].grade;
-                                    tempLstGrade[indexAssId].ismark = resultSqlAccount[indexFirst].ismark; //them ngay 2/1/2022
-
-                                    for (let j = indexFirst + 1; j < resultSqlAccount.length; j++) {
-                                        if (resultSqlAccount[indexFirst].mssv == resultSqlAccount[j].mssv) {
-                                            let indexAssiId = tempLstGrade.findIndex(item => item.assignmentId == resultSqlAccount[j].assignmentId);
-                                            tempLstGrade[indexAssiId].grade = resultSqlAccount[j].grade;
-                                            tempLstGrade[indexAssiId].ismark = resultSqlAccount[j].ismark;//them ngay 2/1/2022
-                                            indexLast = j;
+                                    resultAss = result1;
+                                    //let templateGrade = resultAss.map((item, index) => { return { assignmentId: item.id, grade: 0 } });// sau 2/1/2022
+                                    let templateGrade = resultAss.map((item, index) => { return { assignmentId: item.id, grade: 0, ismark: 'false' } });
+                                    let indexFirst = 0;
+                                    let indexLast = 0;
+                                    let resultReturn = [];
+                                    for (let i = 0; i < Number(numberStudent); i++) {
+                                        temp = {
+                                            mssv: resultSqlAccount[indexFirst].mssv,
+                                            fullName: resultSqlAccount[indexFirst].fullName,
+                                            lstAssAndGrade: []
                                         }
-                                        else {
+                                        let tempLstGrade = templateGrade.map((item) => {
+                                            return { ...item };
+                                        })
+
+                                        let indexAssId = tempLstGrade.findIndex(item => item.assignmentId == resultSqlAccount[indexFirst].assignmentId);
+                                        tempLstGrade[indexAssId].grade = resultSqlAccount[indexFirst].grade;
+                                        tempLstGrade[indexAssId].ismark = resultSqlAccount[indexFirst].ismark; //them ngay 2/1/2022
+
+                                        for (let j = indexFirst + 1; j < resultSqlAccount.length; j++) {
+                                            if (resultSqlAccount[indexFirst].mssv == resultSqlAccount[j].mssv) {
+                                                let indexAssiId = tempLstGrade.findIndex(item => item.assignmentId == resultSqlAccount[j].assignmentId);
+                                                tempLstGrade[indexAssiId].grade = resultSqlAccount[j].grade;
+                                                tempLstGrade[indexAssiId].ismark = resultSqlAccount[j].ismark;//them ngay 2/1/2022
+                                                indexLast = j;
+                                            }
+                                            else {
+                                                temp.lstAssAndGrade = [...tempLstGrade];
+                                                resultReturn.push(temp);
+                                                indexFirst = j;
+                                                indexLast = j;
+                                                break;
+                                            }
+                                        }
+                                        if (indexLast + 1 == resultSqlAccount.length) {
                                             temp.lstAssAndGrade = [...tempLstGrade];
                                             resultReturn.push(temp);
-                                            indexFirst = j;
-                                            indexLast = j;
-                                            break;
                                         }
                                     }
-                                    if (indexLast + 1 == resultSqlAccount.length) {
-                                        temp.lstAssAndGrade = [...tempLstGrade];
-                                        resultReturn.push(temp);
-                                    }
-                                }
-                                res.json(resultReturn);
 
+                                    if(resultReturn.length==Number(numberStudent)){
+                                        res.json(resultReturn);
+                                    }
+                                    else{
+                                        resultReturn.splice(Number(numberStudent)-1,1)
+                                        res.json(resultReturn);
+                                    }
+                                    
+
+                                });
                             });
-                        });
+                        }
+                        else {
+                            res.json([]);
+                        }
+
+
+
                     });
                 }
                 else if (resultRole[0].role === 'student') {
@@ -120,68 +135,68 @@ router.get('/api/GetStudentsWithPoint/:link', function (req, res, next) {
                             res.send(error);
                         }
                         if (result.length) {
-                        resultSqlAccount = result;
-                        let sqlGetAllAss = `SELECT ass.id FROM classaccount cla INNER JOIN classes c ON cla.classId=c.id INNER JOIN assignment ass
+                            resultSqlAccount = result;
+                            let sqlGetAllAss = `SELECT ass.id FROM classaccount cla INNER JOIN classes c ON cla.classId=c.id INNER JOIN assignment ass
                         ON c.id=ass.classId WHERE c.link=? and cla.accountId=? ORDER BY ASS.rank ASC`;
-                        //lay all assignmen trong link
-                        pool.query(sqlGetAllAss, [link, user.id], (error, result1) => {
-                            if (error) {
-                                res.send(error);
-                            }
-                            resultAss = result1;
-                            // let templateGrade = resultAss.map((item) => { return { assignmentId: item.id, grade: 0 } }); //cũ sau 2/1/2022
-                            let templateGrade = resultAss.map((item, index) => { return { assignmentId: item.id, grade: 0,ismark:'false' } });
-                            let indexFirst = 0;
-                            let indexLast = 0;
-                            let resultReturn = [];
-                            let temp = {
-                                mssv: resultSqlAccount[indexFirst].mssv,
-                                fullName: resultSqlAccount[indexFirst].fullName,
-                                lstAssAndGrade: []
-                            }
-                            let tempLstGrade = templateGrade.map((item) => {
-                                return { ...item };
-                            })
-
-                            let indexAssId = tempLstGrade.findIndex(item => item.assignmentId == resultSqlAccount[indexFirst].assignmentId);
-                            tempLstGrade[indexAssId].grade = resultSqlAccount[indexFirst].grade;
-                            tempLstGrade[indexAssId].ismark = resultSqlAccount[indexFirst].ismark; //them ngay 2/1/2022
-
-                            for (let j = indexFirst + 1; j < resultSqlAccount.length; j++) {
-                                if (resultSqlAccount[indexFirst].mssv == resultSqlAccount[j].mssv) {
-                                    let indexAssiId = tempLstGrade.findIndex(item => item.assignmentId == resultSqlAccount[j].assignmentId);
-                                    tempLstGrade[indexAssiId].grade = resultSqlAccount[j].grade;
-                                    tempLstGrade[indexAssiId].ismark = resultSqlAccount[j].ismark;//them ngay 2/1/2022
-                                    indexLast = j;
+                            //lay all assignmen trong link
+                            pool.query(sqlGetAllAss, [link, user.id], (error, result1) => {
+                                if (error) {
+                                    res.send(error);
                                 }
-                                else {
+                                resultAss = result1;
+                                // let templateGrade = resultAss.map((item) => { return { assignmentId: item.id, grade: 0 } }); //cũ sau 2/1/2022
+                                let templateGrade = resultAss.map((item, index) => { return { assignmentId: item.id, grade: 0, ismark: 'false' } });
+                                let indexFirst = 0;
+                                let indexLast = 0;
+                                let resultReturn = [];
+                                let temp = {
+                                    mssv: resultSqlAccount[indexFirst].mssv,
+                                    fullName: resultSqlAccount[indexFirst].fullName,
+                                    lstAssAndGrade: []
+                                }
+                                let tempLstGrade = templateGrade.map((item) => {
+                                    return { ...item };
+                                })
+
+                                let indexAssId = tempLstGrade.findIndex(item => item.assignmentId == resultSqlAccount[indexFirst].assignmentId);
+                                tempLstGrade[indexAssId].grade = resultSqlAccount[indexFirst].grade;
+                                tempLstGrade[indexAssId].ismark = resultSqlAccount[indexFirst].ismark; //them ngay 2/1/2022
+
+                                for (let j = indexFirst + 1; j < resultSqlAccount.length; j++) {
+                                    if (resultSqlAccount[indexFirst].mssv == resultSqlAccount[j].mssv) {
+                                        let indexAssiId = tempLstGrade.findIndex(item => item.assignmentId == resultSqlAccount[j].assignmentId);
+                                        tempLstGrade[indexAssiId].grade = resultSqlAccount[j].grade;
+                                        tempLstGrade[indexAssiId].ismark = resultSqlAccount[j].ismark;//them ngay 2/1/2022
+                                        indexLast = j;
+                                    }
+                                    else {
+                                        temp.lstAssAndGrade = [...tempLstGrade];
+                                        resultReturn.push(temp);
+                                        indexFirst = j;
+                                        indexLast = j;
+                                        break;
+                                    }
+                                }
+                                if (indexLast + 1 == resultSqlAccount.length) {
                                     temp.lstAssAndGrade = [...tempLstGrade];
                                     resultReturn.push(temp);
-                                    indexFirst = j;
-                                    indexLast = j;
-                                    break;
                                 }
-                            }
-                            if (indexLast + 1 == resultSqlAccount.length) {
-                                temp.lstAssAndGrade = [...tempLstGrade];
-                                resultReturn.push(temp);
-                            }
-                            res.json(resultReturn);
+                                res.json(resultReturn);
 
-                        });
+                            });
                         }
                         else {
                             res.json([])
                         }
 
                     });
-                
+
                 }
-            
+
 
             }
         });
-        
+
 
 
     }
@@ -246,28 +261,28 @@ router.post('/api/UploadStudentsExcelFile/:link', function (req, res, next) {
                             res.send(error);
                         }
                         else {
-                            const sqlinsertclass =`SELECT id FROM account WHERE mssv=?`;
+                            const sqlinsertclass = `SELECT id FROM account WHERE mssv=?`;
                             pool.query(sqlinsertclass, [arr[i].StudentId], (error, result2) => {
                                 if (error) {
                                     res.send(error);
                                 }
                                 else {
-                                      if (result2.length) {
+                                    if (result2.length) {
                                         let sqlUpdate = `INSERT INTO classaccount (accountId,classId,role) VALUES (?,?,?) ON DUPLICATE KEY UPDATE role=?`;
-                                        pool.query(sqlUpdate, [result2[0].id,ID,"student","student"], (error, result4) => {
+                                        pool.query(sqlUpdate, [result2[0].id, ID, "student", "student"], (error, result4) => {
                                             if (error) {
                                                 res.send(error);
                                             }
                                         });
-                                      }
-        
+                                    }
+
                                 }
                             });
 
                         }
                     });
                 }
-                
+
                 res.json({ message: "insert student success" });
             }
         });
@@ -300,8 +315,8 @@ router.put('/api/UpdatePointAssigmentStudent/:link', function (req, res, next) {
             }
             else {
                 if (result[0].role === "teacher") {
-                    let sqlUpdate = `INSERT INTO grade (mssv,grade,assignmentId,classId) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE grade=?`;
-                    pool.query(sqlUpdate, [arrayInfo[0], arrayInfo[2], arrayInfo[1], result[0].classId, arrayInfo[2]], (error, result) => {
+                    let sqlUpdate = `INSERT INTO grade (mssv,grade,assignmentId,classId,ismark) VALUES (?,?,?,?,?) ON DUPLICATE KEY UPDATE grade=?`;
+                    pool.query(sqlUpdate, [arrayInfo[0], arrayInfo[2], arrayInfo[1], result[0].classId,'false',arrayInfo[2]], (error, result) => {
                         if (error) {
                             res.send(error);
                         }
@@ -356,7 +371,7 @@ router.post('/api/markFinalGradeComposition/:link', function (req, res, next) {
             return;
         }
         let link = req.params.link;
-        let {ismark,mssv,assignmentId } = req.body;
+        let { ismark, mssv, assignmentId } = req.body;
 
         const sql = `SELECT cl.role,cl.classId FROM classaccount cl INNER JOIN classes c ON cl.classId=c.id WHERE link=?
         and cl.accountId=?`;
@@ -367,7 +382,7 @@ router.post('/api/markFinalGradeComposition/:link', function (req, res, next) {
             else {
                 if (result[0].role === "teacher") {
                     let sqlUpdate = `UPDATE grade SET ismark=? WHERE mssv=? and assignmentId=?`;
-                    pool.query(sqlUpdate, [ismark,mssv,assignmentId], (error, result) => {
+                    pool.query(sqlUpdate, [ismark, mssv, assignmentId], (error, result) => {
                         if (error) {
                             res.send(error);
                         }
@@ -393,7 +408,7 @@ router.post('/api/markFinalColumnGrade/:link', function (req, res, next) {
             return;
         }
         let link = req.params.link;
-        let {ismark,assignmentId } = req.body;
+        let { ismark, assignmentId } = req.body;
 
         const sql = `SELECT cl.role,cl.classId FROM classaccount cl INNER JOIN classes c ON cl.classId=c.id WHERE link=?
         and cl.accountId=?`;
@@ -404,18 +419,18 @@ router.post('/api/markFinalColumnGrade/:link', function (req, res, next) {
             else {
                 if (result[0].role === "teacher") {
                     let sqlUpdate = `UPDATE grade SET ismark=? WHERE assignmentId=?`;
-                    pool.query(sqlUpdate, [ismark,assignmentId], (error, result) => {
+                    pool.query(sqlUpdate, [ismark, assignmentId], (error, result) => {
                         if (error) {
                             res.send(error);
                         }
-                        let sqlUpdateMarkAssignment=`UPDATE assignment SET mark=? WHERE id=?`;
-                        pool.query(sqlUpdateMarkAssignment, [ismark,assignmentId], (error, result) => {
+                        let sqlUpdateMarkAssignment = `UPDATE assignment SET mark=? WHERE id=?`;
+                        pool.query(sqlUpdateMarkAssignment, [ismark, assignmentId], (error, result) => {
                             if (error) {
                                 res.send(error);
                             }
                             res.json({ message: `mark final composition grade success` });
                         });
-                        
+
                     });
                 }
             }

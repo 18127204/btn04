@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Axios from 'axios';
 import * as XLSX from "xlsx";
 
-const UploadGradeAssignment = ({ infoAss }) => {
+const UploadGradeAssignment = ({ infoAss,link }) => {
     const [lstGradeAss, setLstGradeAss] = useState([]);
 
     const readExcelGradeAss = (file) => {
@@ -32,7 +32,7 @@ const UploadGradeAssignment = ({ infoAss }) => {
         let promise = Axios({
             method: 'POST',
             url: `${URL_API}/assignment/api/GradeStudentsAssignment`,
-            data: { lstAss: JSON.stringify(lstGradeAss), assignmentId: infoAss.id },
+            data: { lstAss: JSON.stringify(lstGradeAss), assignmentId: infoAss.id,link:link },
             headers: { 'Authorization': 'Bearer ' + localStorage.getItem(TOKEN) }
         });
         promise.then((res) => {

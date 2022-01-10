@@ -86,7 +86,7 @@ router.get('/api/getAllNotification/:link', function (req, res, next) {
                     if (error) {
                         res.send(error);
                     }
-                    const sqlNotifi = `SELECT nof.*,acc.username from notification nof inner join account acc on (acc.id=nof.senderId or acc.mssv=nof.senderId) where recipientId=? or recipientId=? and classId=?`;
+                    const sqlNotifi = `SELECT nof.*,acc.username from notification nof inner join account acc on (acc.id=nof.senderId or acc.mssv=nof.senderId) where (recipientId=? or recipientId=?) and classId=?`;
                     pool.query(sqlNotifi, [user.id, resultmssv[0].mssv,resultIdClass[0].id], (error, resultNoti) => {
                         if (error) {
                             res.send(error);

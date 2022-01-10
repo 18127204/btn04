@@ -86,8 +86,8 @@ router.post('/api/CreateAssignment', function (req, res, next) {
             else {
                 if (result[0].role === "teacher") {
 
-                    let sqlInsert = `INSERT INTO assignment (classId,name,creatorId,description,grade,rank) VALUES(?,?,?,?,?,?)`;
-                    pool.query(sqlInsert, [result[0].id, name, user.id, description, grade, rank], (error, result) => {
+                    let sqlInsert = `INSERT INTO assignment (classId,name,creatorId,description,grade,rank,mark) VALUES(?,?,?,?,?,?,?)`;
+                    pool.query(sqlInsert, [result[0].id, name, user.id, description, grade, rank, 'false'], (error, result) => {
                         if (error) {
                             res.send(error);
                         }
@@ -127,7 +127,7 @@ router.delete('/api/DeleteAssignment', function (req, res, next) {
                 res.send(error);
             }
             else {
-                let sqlDeleteGrade=`DELETE FROM grade WHERE assignmentId=?`;
+                let sqlDeleteGrade = `DELETE FROM grade WHERE assignmentId=?`;
                 pool.query(sqlDeleteGrade, [id], (error, result) => {
                     if (error) {
                         res.send(error);
@@ -252,17 +252,29 @@ router.post('/api/GradeStudentsAssignment', function (req, res, next) {
             res.send({ message: info.message, success: false });
             return;
         }
-        let { lstAss, assignmentId } = req.body;
-        const lstAssignment = JSON.parse(lstAss);
-        for (let i = 0; i < lstAssignment.length; i++) {
-            let sqlInsertGrade = `INSERT INTO grade (mssv,grade,assignmentId) VALUES (?,?,?) ON DUPLICATE KEY UPDATE grade=?`;
-            pool.query(sqlInsertGrade, [lstAssignment[i].StudentID, lstAssignment[i].Grade, assignmentId, lstAssignment[i].Grade], (error, result) => {
-                if (error) {
-                    res.send(error);
+        let { lstAss, assignmentId, link } = req.body;
+        const sqlFindClassId = `SELECT id FROM classes WHERE link=?`;
+        pool.query(sqlFindClassId, [link], (error, resultClassId) => {
+            if (error) {
+                res.send(error);
+            }
+            else {
+                const lstAssignment = JSON.parse(lstAss);
+                for (let i = 0; i < lstAssignment.length; i++) {
+                    let sqlInsertGrade = `INSERT INTO grade (mssv,grade,assignmentId,classId,ismark) VALUES (?,?,?,?,?) ON DUPLICATE KEY UPDATE grade=?`;
+                    pool.query(sqlInsertGrade, [lstAssignment[i].StudentID, lstAssignment[i].Grade, assignmentId, resultClassId[0].id, 'false', lstAssignment[i].Grade], (error, result) => {
+                        if (error) {
+                            res.send(error);
+                        }
+                    })
                 }
-            })
-        }
-        res.json({ message: "Upload grade assignment success" });
+                res.json({ message: "Upload grade assignment success" });
+            }
+        })
+
+
+
+
     }
     )(req, res, next);
 })

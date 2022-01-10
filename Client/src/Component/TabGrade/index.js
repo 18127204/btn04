@@ -78,14 +78,14 @@ const TabGrade = ({ role, link }) => {
     }
 
     //
-    const displayTRowNameAssignment = (lst) => {
+    const displayTRowNameAssignment = (lst,op) => {
         if (lst.length) {
             let tRow = [];
             tRow.push(<th key={0}>ID Students</th>);
             lst.map((item, index) => {
                 tRow.push(
                     <th key={index + 1}>{item.name} ({item.grade} đ)
-                        {(role === 'teacher') ? 
+                        {(role === 'teacher'&&op===0) ? 
                         (<input key={`tisfin${index}`} type="checkbox" defaultChecked={item.mark === 'true' ? true : false}
                         onChange={() => { handleMarkFinalColumGrade(item.id, !(item.mark === 'true' ? true : false)) }}/>) : ('')}
     
@@ -219,7 +219,7 @@ const TabGrade = ({ role, link }) => {
             <table className="table" id='emp-table1'>
                 <thead>
                     <tr>
-                        {displayTRowNameAssignment(lstRowNameAss)}
+                        {displayTRowNameAssignment(lstRowNameAss,0)}
                     </tr>
                 </thead>
                 <tbody>

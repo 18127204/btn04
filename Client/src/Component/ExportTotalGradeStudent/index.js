@@ -18,7 +18,7 @@ const ExportTotalGradeStudent = ({ lstRowNameAss, lstGradeStudent, displayTRowNa
                     <tr key={`trGrade${i}`}>
                         <td>{arrayGradeStu[i].mssv}</td>
                         {tdGrade}
-                        {handleTotalGrade(lstRowNameAss, arrayGradeStu[i].lstAssAndGrade)}
+                        {handleTotalGrade(lstRowNameAss, arrayGradeStu[i].lstAssAndGrade,role)}
                     </tr>
                 )
                 result.push(temp);
@@ -33,7 +33,7 @@ const ExportTotalGradeStudent = ({ lstRowNameAss, lstGradeStudent, displayTRowNa
                 <table className="table" id='gradeBoardTable' style={{ display: 'none' }}>
                     <thead>
                         <tr>
-                            {displayTRowNameAssignment(lstRowNameAss)}
+                            {displayTRowNameAssignment(lstRowNameAss,1)}
                         </tr>
                     </thead>
                     <tbody>

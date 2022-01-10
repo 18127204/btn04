@@ -234,7 +234,7 @@ const ShowDetailClass = () => {
                                                 <UpdateAssignment infoAss={bt} link={link} />
                                                 <RemoveAssignment infoAss={bt} />
                                                 <ExportAssignmentGrade infoAss={bt} fileName={fileNameAssignmentGrade} />
-                                                <UploadGradeAssignment infoAss={bt} />
+                                                <UploadGradeAssignment infoAss={bt} link={link} />
                                                 <Link to={`/classroom/${link}/gradereview/${bt.id}`} state={{ infoAss: bt,role:role,link:link }} className="btn btn-secondary text-white mr-3">Grade review</Link>
                                             </div>
                                         ) : (

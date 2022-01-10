@@ -6,10 +6,16 @@ var connect =mysql.createConnection({
     // database:'sql6451769',
     // connectionLimit:10
 
-    // host:'sql6.freemysqlhosting.net',
+    // host :'sql6.freemysqlhosting.net',
     // user:'sql6455570',
     // password:'KPp3AWDGUA',
     // database:'sql6455570',
+    // connectionLimit:50
+
+    // host :'sql6.freemysqlhosting.net',
+    // user:'sql6464467',
+    // password:'tF8CnZ4j51',
+    // database:'sql6464467',
     // connectionLimit:50
 
     host:'localhost',

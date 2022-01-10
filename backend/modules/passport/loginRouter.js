@@ -13,7 +13,7 @@ router.post('/',passport.authenticate('local',{session:false}),(req, res, next)=
             isadmin:req.user.isadmin
         },
         process.env.jwt_secret,
-        { expiresIn:'1h'})
+        { expiresIn:'5h'})
     });
 });
 
