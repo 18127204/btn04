@@ -6,14 +6,16 @@ const { OAuth2Client } = require('google-auth-library');
 const e = require('express');
 var jwt = require('jsonwebtoken');
 
-const client = new OAuth2Client("398530816289-0muicg4r9jijupqash4l1gkg2p71tbai.apps.googleusercontent.com");
+// const client = new OAuth2Client("398530816289-0muicg4r9jijupqash4l1gkg2p71tbai.apps.googleusercontent.com");
+const client = new OAuth2Client("254169420914-1n8jeadvr1ol3gtpshc6ct98jrrf4j6h.apps.googleusercontent.com");
 router.post('/api', function (req, res, next) {
      const tokenId = req.body.tokenId;
     async function verify()
     {
         const ticket =  await client.verifyIdToken({
         idToken: tokenId,
-        audience: "398530816289-0muicg4r9jijupqash4l1gkg2p71tbai.apps.googleusercontent.com",
+        // audience: "398530816289-0muicg4r9jijupqash4l1gkg2p71tbai.apps.googleusercontent.com",
+        audience: "254169420914-1n8jeadvr1ol3gtpshc6ct98jrrf4j6h.apps.googleusercontent.com",
         });
         const payload = ticket.getPayload();
         const googleId = payload.sub;

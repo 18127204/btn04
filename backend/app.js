@@ -27,7 +27,7 @@ var usersRouter = require('./routes/Eliminated/users');
 var gradeReviewRouter=require('./routes/GradeReview');
 var forgotPasswordRouter=require('./routes/ForgotPassword');
 var adminRouter = require('./routes/Admin');
-var userRouter =require('./routes/user');
+var userRouter =require('./routes/User');
 var noticeRouter=require('./routes/Notification');
 var app = express();
 

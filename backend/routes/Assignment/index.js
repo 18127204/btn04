@@ -18,7 +18,7 @@ router.get('/api/ShowGradeStructure/:link', function (req, res, next) {
         }
         let link = req.params.link;
         let sql = `SELECT Ass.name,Ass.grade FROM classes CL INNER JOIN assignment Ass ON Ass.classId = CL.id WHERE CL.link=?
-        ORDER BY ASS.rank ASC
+        ORDER BY Ass.rank ASC
         `;
         pool.query(sql, [link], (error, result) => {
             if (error) {
@@ -48,7 +48,7 @@ router.get('/api/GetALLListAssignment/:link', function (req, res, next) {
         }
         let link = req.params.link;
         let sql = `SELECT ass.id,ass.classId,ass.name,ass.creatorId,ass.description,ass.grade,ass.rank,ass.mark FROM classaccount cla INNER JOIN classes c ON cla.classId=c.id INNER JOIN assignment ass
-        ON c.id=ass.classId WHERE c.link=? and cla.accountId=? ORDER BY ASS.rank ASC
+        ON c.id=ass.classId WHERE c.link=? and cla.accountId=? ORDER BY ass.rank ASC
         `;
         pool.query(sql, [link, user.id], (error, result) => {
             if (error) {

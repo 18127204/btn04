@@ -4,7 +4,7 @@ var passport = require('passport')
 
 var JwtStrategy = require('passport-jwt').Strategy,
     ExtractJwt = require('passport-jwt').ExtractJwt;
-var pool = require('../../routes/pool');
+var pool = require('../../routes/Pool');
 
 
 passport.use(new LocalStrategy(
